@@ -5,6 +5,7 @@
 | Property | Value (measured with ffprobe / shasum) |
 |---|---|
 | File | `demo/DEFX_Bridge_Demo.mp4`. Not committed to git; attached to the v0.1.0 GitHub Release |
+| YouTube | https://youtu.be/vZMdirVglzE (Unlisted, channel @parammadan3544, uploaded 2026-11-12). Same file, not re-encoded by us; English subtitle track uploaded from `captions.srt`; category Science and technology; not made for kids |
 | Duration | 120.03 s |
 | Resolution / frame rate | 1920 × 1080, 30 fps |
 | Video | H.264 (High profile), yuv420p, about 219 kb/s |

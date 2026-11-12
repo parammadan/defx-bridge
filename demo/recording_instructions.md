@@ -55,9 +55,9 @@ There was no spreadsheet application on the build machine, so the video shows th
 3. Record with QuickTime (File → New Screen Recording, "Record Selected Portion") while you open the Methods, Variables and PreserveMe sheets.
 4. Keep the clip unedited, and label it in the video as a screen recording.
 
-## YouTube-ready text (not published)
+## YouTube
 
-No YouTube upload has been made. If you choose to upload:
+Published (Unlisted) on 2026-11-12: https://youtu.be/vZMdirVglzE, uploaded through YouTube Studio. The text originally prepared for it is kept below for reference. The live description is the version supplied with the upload request.
 
 - **Title:** DEFX Bridge — SAS & R Metadata Automation | Live Demo
 - **Description:**
