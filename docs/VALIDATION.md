@@ -36,14 +36,14 @@ Not errors by design:
 
 ## What the automated tests establish
 
-`tests/testthat` has 4 files covering the 25 required categories plus extras. Each test names the behaviour it checks. Last full run (R 4.6.1, macOS 26.4): **50 tests, 226 expectations, 0 failed, 0 skipped** (`Rscript -e 'testthat::test_local(".")'`). Under `R CMD check` the 13 tests that need `examples/` and `bin/` skip: Status OK, 123 passed.
+`tests/testthat` has 4 files covering the 25 required categories plus extras. Each test names the behaviour it checks. Last full run (R 4.6.1, macOS 26.4): **52 tests, 236 expectations, 0 failed, 0 skipped**; the same on CI (Ubuntu 24.04) (`Rscript -e 'testthat::test_local(".")'`). Under `R CMD check` the 15 tests that need `examples/` or `bin/` skip (they are excluded from the built package): Status OK, 123 passed. The CI full-suite job sets `DEFX_REQUIRE_FIXTURES=true` and fails on any skip, so those tests always run there.
 
 | Area | File | Examples |
 |---|---|---|
 | Extraction & normalization | `test-parser.R` | SAS/R extraction, SAS↔R equivalence, all tag types, multi-line consolidation and order, file/line provenance, strings/raw strings/DATALINES ignored, case/whitespace, long and Unicode descriptions intact, no code execution, V008, stable file order |
 | Validation | `test-validate.R` | V001–V007, V010–V012, V014; no false duplicate; Computation+Comments coexist; variable-only and parameter-level tags; spec casing; empty and missing directories; paths with spaces |
 | Workbook | `test-workbook.R` | Mapping for every tag type; template unchanged (md5); sheets, columns, untagged rows and sentinel preserved; KEEPTAGS-style switch; repeatable content (and `compare` detects a real difference); V009 leaves no file or temp file |
-| CLI | `test-cli.R` | Real `bin/defxbridge` runs: help, exit codes 0/1/2, no stack traces, export refuses on errors and never overwrites the template, runs from another cwd with spaces in paths, `--opt=value`, `compare` |
+| CLI | `test-cli.R` | Real `bin/defxbridge` runs: help, exit codes 0/1/2, no stack traces, piping to `head` keeps the exit status, tables fit the terminal width, export refuses on errors and never overwrites the template, runs from another cwd with spaces in paths, `--opt=value`, `compare` |
 
 To check that the tests actually detect faults, three single-line mutations were applied to a scratch copy, and each made the matching tests fail. Disabling SAS string skipping failed 9 tests. Splitting consolidation by line failed 12. Changing one cell on the PreserveMe sheet during export failed 7.
 

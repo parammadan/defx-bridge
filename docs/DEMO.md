@@ -1,5 +1,7 @@
 # Demo guide
 
+**Recorded demo video:** [DEFX_Bridge_Demo.mp4 (v0.1.0 release)](https://github.com/parammadan/defx-bridge/releases/download/v0.1.0/DEFX_Bridge_Demo.mp4). Its build and provenance are described in [demo/video_manifest.md](../demo/video_manifest.md).
+
 Everything below was run on this machine (R 4.6.1, macOS 26.4, arm64). The quoted outputs are copied from those runs. Each command takes about 0.4–1 s.
 
 **Before the call:** run `./scripts/demo.sh` once (with `DEMO_NO_PAUSE=1`) so `artifacts/` exists. Enlarge the terminal font. Have `examples/valid/makeadae.sas` open in an editor, and keep Excel/Numbers closed until the last step.
