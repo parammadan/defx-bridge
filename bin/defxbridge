@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# DEFX Bridge command-line entry point (macOS / Linux).
+# Works from any directory; relative paths are resolved against the caller's cwd.
+set -u
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do               # follow symlinks to find the repo
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+ROOT="$(cd -P "$(dirname "$SOURCE")/.." && pwd)"
+if ! command -v Rscript >/dev/null 2>&1; then
+  echo "defxbridge: error: Rscript not found on PATH (install R >= 4.1)" >&2
+  exit 1
+fi
+# Terminal width for table layout (left unset when there is no terminal, e.g. in CI).
+if [ -z "${DEFX_COLUMNS:-}" ]; then
+  DEFX_COLUMNS="$( { stty size </dev/tty | cut -d" " -f2; } 2>/dev/null || true)"
+  export DEFX_COLUMNS
+fi
+exec Rscript --no-init-file "$ROOT/inst/cli/run.R" "$ROOT" "$@"
