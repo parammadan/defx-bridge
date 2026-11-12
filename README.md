@@ -21,6 +21,8 @@ The idea comes from a published SAS workflow: Brendan Bartley and Megan Hinger, 
 
 *Frame from the demo video: `scan` over one SAS and two R programs.*
 
+Project page: <https://parammadan.github.io/defx-bridge/>
+
 ## Why it matters
 
 - **Statistical programs carry two things:** the derivation logic, and the explanation of it that reviewers and define.xml need.
