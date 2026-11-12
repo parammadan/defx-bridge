@@ -1,0 +1,18 @@
+Package: defxbridge
+Type: Package
+Title: Extract DEFX Documentation Tags from SAS and R Programs
+Version: 0.1.0
+Authors@R: person("Param", "Madan", role = c("aut", "cre"), email = "86084060+parammadan@users.noreply.github.com")
+Description: An independent R prototype inspired by the published DEFX tag
+    concept (Bartley and Hinger, PharmaSUG 2026, AP-220). Reads structured
+    DEFX documentation comments from SAS and R source files, normalizes them
+    into one provenance-preserving metadata table, validates them against an
+    explicit specification, and fills a synthetic define-like Excel workbook.
+    Not affiliated with or endorsed by CBAR or PharmaSUG; not a validated or
+    regulatory-certified tool.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.1)
+Imports: openxlsx, stats, tools, utils
+Suggests: testthat (>= 3.0.0), readxl, withr
+Config/testthat/edition: 3

@@ -1,0 +1,8 @@
+artifacts/
+.Rhistory
+.RData
+*.Rcheck/
+defxbridge_*.tar.gz
+demo/*.mp4
+demo/work/
+.DS_Store
