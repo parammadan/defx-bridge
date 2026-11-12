@@ -1,0 +1,39 @@
+1
+00:00:00,200 --> 00:00:06,800
+DEFX Bridge: an independent prototype inspired by the published DEFX approach (Bartley & Hinger, PharmaSUG 2026, AP-220).
+
+2
+00:00:07,200 --> 00:00:17,233
+A real SAS program. Each /* DEFX | ... */ comment documents the code beside it. The three ADAE.AERELFL lines (27-29) are one method, not three duplicates.
+
+3
+00:00:17,633 --> 00:00:29,867
+A real R program using the same syntax as # comments. Line 49 is a DEFX-like string literal: it is code, not a comment, so it must be ignored.
+
+4
+00:00:30,267 --> 00:00:42,533
+scan: 48 tag lines become 40 records (SAS 15, R 25), each with its language, dataset.variable and file:line provenance, e.g. makeadae.sas:27;28;29.
+
+5
+00:00:42,933 --> 00:00:50,200
+validate: every tagged target is checked against a synthetic 71-row specification. Result: 0 errors, 0 warnings.
+
+6
+00:00:50,600 --> 00:01:03,533
+The unknown variable is reported with its file and line (unknown_variable.R:2) and exit code 2. Errors are surfaced, never silently accepted.
+
+7
+00:01:03,933 --> 00:01:15,167
+export: fills a COPY of the define-like template, re-reads it from disk, and keeps it only because all 14 preservation checks pass.
+
+8
+00:01:15,567 --> 00:01:32,000
+Methods, read from the generated file: the three AERELFL lines are joined in order, and the hand-entered Expression Code cell is kept. PreserveMe is unchanged.
+
+9
+00:01:32,400 --> 00:01:49,833
+Variables: the stale Origin 'Assigned' becomes 'Derived' with its method. Rows without tags, such as AESEQ, keep their hand-entered values.
+
+10
+00:01:50,233 --> 00:01:59,833
+DEFX Bridge: an independent prototype exploring reproducible metadata workflows across SAS and R.
