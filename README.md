@@ -1,170 +1,203 @@
 # DEFX Bridge
 
-An independent R prototype that reads **DEFX documentation tags** from **SAS and R** programs, normalizes them into one provenance-preserving metadata table, validates them against an explicit specification, and fills a **synthetic, define-like Excel workbook**.
+**Cross-language metadata extraction and validation for SAS and R statistical programs.**
 
-> DEFX Bridge is an independently developed prototype exploring R-compatible metadata extraction inspired by the published DEFX approach. It is not affiliated with or endorsed by CBAR or PharmaSUG.
+[![CI](https://github.com/parammadan/defx-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/parammadan/defx-bridge/actions/workflows/ci.yml)
+![R ≥ 4.1](https://img.shields.io/badge/R-%E2%89%A5%204.1-276DC3)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![Status: prototype](https://img.shields.io/badge/status-research%20prototype-orange)
 
-It is **not** an implementation of the original DEFX macro, **not** a reproduction of any production workflow, and **not** a clinically validated or regulatory-certified tool. All data in this repository is synthetic.
+DEFX Bridge reads structured **DEFX** documentation comments from **SAS and R** programs. It normalizes them into one table that records the source file and line of every tag line, validates them against an explicit specification, and fills a copy of a synthetic, define-like Excel workbook (Datasets, Variables, Methods and Comments sheets).
 
-## Why
+The idea comes from a published SAS workflow: Brendan Bartley and Megan Hinger, *Do One Task, Get Another Done for Free: Use DEFX Tags in Comments to Fill Out Your define.xml*, PharmaSUG 2026, Paper AP-220. In that workflow, the comment a programmer writes to document a derivation for code review also fills in the define.xml. DEFX Bridge is an **independently written R extension** of that idea. The same tag syntax works in R comments, so a study whose programs are a mix of SAS and R can keep one documentation convention.
 
-The published DEFX concept (Bartley & Hinger, PharmaSUG 2026, AP-220) turns the comments programmers already write into define.xml content. A `/* DEFX | ADAE.AERELFL | Y if AE.AEREL="RELATED" */` comment documents the code for review *and* fills the Methods/Variables sheets of the define workbook. Teams moving some derivations from SAS to R would need the same tags to work in both languages, so one study's metadata can come from mixed SAS/R programs. DEFX Bridge explores that idea:
+> **Independent prototype.** DEFX Bridge is not affiliated with or endorsed by CBAR, the Harvard T.H. Chan School of Public Health, or PharmaSUG. It is not an implementation of the original DEFX macro, contains no code from the paper or any internal repository, and is not a clinically validated or regulatory-certified tool. All data in this repository is synthetic.
 
-```sas
-/* DEFX | ADAE.AERELFL | Y if AE.AEREL="RELATED" */        <- makeadae.sas
+## Demo
+
+**▶ [Watch the 2-minute demo (MP4, v0.1.0 release)](https://github.com/parammadan/defx-bridge/releases/download/v0.1.0/DEFX_Bridge_Demo.mp4)**. Every terminal scene is a real shell session recorded with [VHS](https://github.com/charmbracelet/vhs): real commands, real output, not sped up. See [demo/video_manifest.md](demo/video_manifest.md).
+
+[![scan output: 48 tag lines become 40 records with file:line provenance](docs/images/scan.png)](https://github.com/parammadan/defx-bridge/releases/download/v0.1.0/DEFX_Bridge_Demo.mp4)
+
+*Frame from the demo video: `scan` over one SAS and two R programs.*
+
+## Why it matters
+
+- **Statistical programs carry two things:** the derivation logic, and the explanation of it that reviewers and define.xml need.
+- **Keeping that explanation in a separate document is extra work.** Someone has to find the program and copy the logic into the define workbook at the end of a study, and the two can drift apart.
+- **Structured source comments remove most of that work.** The comment next to the code *is* the metadata, so it is written while programming and checked during code review, as the original DEFX paper describes.
+- **A shared representation helps mixed SAS/R work.** When one ADaM program is rewritten in R, its tags move with it unchanged, and the define workbook doesn't care which language a tag came from.
+- **Validation and provenance make the metadata reviewable.** Every definition points back to `file:line`. Unknown variables, malformed tags and conflicting definitions are reported with their locations instead of being silently written.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    SAS["SAS programs<br/>/* DEFX | ... */"] --> EX
+    R["R programs<br/># DEFX | ..."] --> EX
+    EX["Source extraction<br/>SAS comment lexer<br/>R tokenizer (no code is run)"] --> P["DEFX parser<br/>tag grammar, types,<br/>name forms"]
+    P --> N["Metadata normalization<br/>multi-line consolidation,<br/>dataset vs variable scope"]
+    N --> V["Specification validation<br/>V001-V014 diagnostics"]
+    SPEC[("spec.csv")] --> V
+    V --> X["Excel export<br/>copy of template, read back<br/>and checked, then renamed"]
+    TPL[("define-like<br/>template.xlsx")] --> X
+    V --> REP["Validation report<br/>CSV + Markdown"]
+    X --> OUT[("filled .xlsx<br/>+ traceability CSV")]
+    PROV{{"Provenance (cross-cutting)<br/>file, line, column and raw text<br/>for every tag line"}} -.-> P
+    PROV -.-> N
+    PROV -.-> V
+    PROV -.-> X
 ```
-```r
-# DEFX | ADSL.SAFFL | Y if the participant received any dose  <- makeadsl.R
-```
 
-Both become rows in the same normalized table with `file:line` provenance, pass the same validation rules, and land in the same workbook.
+Each box is a file under `R/`: `discovery.R`, `parser.R`, `normalize.R`, `validate.R`, `workbook.R`, `reports.R` and `cli.R`. Details are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Install
+## Features
 
-Requirements: R ≥ 4.1 (developed on R 4.6.1, macOS arm64), plus:
+All of the following are implemented and covered by the automated tests:
+
+- **Two languages, one syntax.** SAS `/* DEFX | ... */` and R `# DEFX | ...` produce identical normalized records. A test checks this.
+- **Supported tag patterns:**
+  - Computation (the default type), Imputation, Predecessor and Assigned
+  - variable and dataset Comments
+  - a variable-only tag that applies in every dataset
+  - parameter-level methods (`AVAL.<DS>.PARAMCD.EQ.<V>` and `<DS>.<VAR>.<V>`)
+- **Multi-line consolidation.** Repeated lines for one name and type in one program become one method, in source order. They are never flagged as duplicates.
+- **Provenance.** Every record keeps its first line, all contributing lines (e.g. `27;28;29`), the segment count and the exact raw comments.
+- **Conservative lexing.** R is read with R's own tokenizer and never run. The SAS lexer skips strings and DATALINES. DEFX-like text inside a string literal is ignored.
+- **Validation codes.** V001 malformed tag · V002 unknown target · V003 the same target in two programs (both locations reported) · V004 invalid type · V005 bad predecessor · V006 conflicting origins · V007 bad specification · V008 unreadable source · V009 target missing from template · V010–V014 warnings and info.
+- **Safe workbook export:**
+  - never overwrites the template, and writes to a temporary file first
+  - reads the result back with an independent reader (readxl) and checks it against the template: sheet names, untouched sheets cell by cell, columns and rows without tags, headers, and a `DO_NOT_CHANGE` sentinel
+  - moves the file into place only if every check passes
+  - writes **no** workbook if validation found errors
+- **CLI** `scan | validate | export | compare` with exit codes `0` (success), `2` (validation errors) and `1` (usage or runtime error). It doesn't print stack traces for input errors, works from any directory and with paths that contain spaces, can be piped to `head`, and fits its tables to the terminal width.
+- **Repeatable.** Identical inputs give identical record CSVs (same checksum) and workbooks with identical content.
+
+## Quick start
+
+Requires R ≥ 4.1. Developed on R 4.6.1 on macOS; CI runs Ubuntu 24.04 with the current R release.
 
 ```bash
+git clone https://github.com/parammadan/defx-bridge.git
+cd defx-bridge
 Rscript -e 'install.packages(c("openxlsx", "readxl", "testthat", "withr"))'
-```
 
-`openxlsx` is required at runtime. `readxl` is optional at runtime: it is used as an independent reader when verifying the exported workbook, with a fallback to openxlsx. `testthat` and `withr` are only needed for tests. No SAS installation, network, server, database or API key is needed.
-
-You don't have to install the package. `bin/defxbridge` sources `R/*.R` straight from the checkout:
-
-```bash
 ./bin/defxbridge --help
-```
-
-## Commands
-
-```bash
-# 1. Extract + normalize tags (syntax checks only)
-./bin/defxbridge scan --source examples/valid --out artifacts/scan.csv
-
-# 2. Validate against the specification
+./bin/defxbridge scan     --source examples/valid --spec examples/spec.csv --out artifacts/scan.csv
 ./bin/defxbridge validate --source examples/valid --spec examples/spec.csv --out artifacts/validation.csv
-
-# 3. Validate, then fill a COPY of the define-like template
-./bin/defxbridge export --source examples/valid --spec examples/spec.csv \
+./bin/defxbridge export   --source examples/valid --spec examples/spec.csv \
   --template examples/define_like_template.xlsx --out artifacts/define_like_filled.xlsx
 
-# Intentionally invalid input (exits 2)
-./bin/defxbridge validate --source examples/invalid --spec examples/spec.csv
-
-# Content comparison of two workbooks (repeatability)
-./bin/defxbridge compare artifacts/a.xlsx artifacts/b.xlsx
+./scripts/demo.sh        # guided walkthrough (DEMO_NO_PAUSE=1 to run straight through)
 ```
 
-| Exit code | Meaning |
-|---|---|
-| 0 | success (warnings and info are allowed) |
-| 2 | validation found at least one error. `export` writes no workbook |
-| 1 | usage or runtime error (bad option, missing file, invalid spec or template) |
+No SAS installation, server, database, API key or network connection is needed after the packages are installed. `bin/defxbridge` runs the code straight from the checkout, so the package doesn't have to be installed.
 
-`--source` can be repeated and accepts directories (searched recursively by default; `--no-recursive` limits the search to one level) or single files. Relative paths resolve against your current directory, and the script works from any directory. Run `defxbridge <command> --help` for every option.
+## Demonstration examples
 
-## Supported syntax
+These outputs come from the shipped synthetic examples.
 
-The same syntax works in a SAS `/* ... */` comment or an R `#` comment:
+**1. SAS documentation** (`examples/valid/makeadae.sas`)
 
-| Pattern | Example |
-|---|---|
-| Computation (default type) | `DEFX \| ADAE.AERELFL \| Y if AE.AEREL="RELATED"` |
-| Imputation | `DEFX \| ADAE.ASTDT \| Imputation \| day 1 imputed when missing` |
-| Predecessor | `DEFX \| ADAE.AETERM \| Predecessor \| AE.AETERM` |
-| Assigned | `DEFX \| ADAE.PARAMCD \| Assigned` |
-| Variable comment | `DEFX \| ADAE.AERELFL \| Comments \| text` |
-| Dataset comment | `DEFX \| ADAE \| Comments \| text` |
-| Variable in every dataset | `DEFX \| STUDYID \| Assigned` |
-| Parameter-level method (Methods only) | `DEFX \| AVAL.ADVS.PARAMCD.EQ.SYSBP \| text` or `DEFX \| ADVS.AVAL.PULSE \| text` |
-| Multi-line description | repeat the same name **and type** on consecutive tag lines |
+```sas
+/* DEFX | ADAE.AERELFL | Y if AE.AEREL="RELATED"     */
+/* DEFX | ADAE.AERELFL | N if AE.AEREL="NOT RELATED" */
+/* DEFX | ADAE.AERELFL | otherwise set to missing    */
+/* DEFX | ADAE.AERELFL | Comments | Synthetic example: relatedness as recorded on the CRF */
+```
 
-Keywords, types and identifiers are case-insensitive, and identifiers are upper-cased. Whitespace around `|` is ignored. The description text is kept as written: quotes, punctuation and Unicode are preserved, inner spacing is preserved, and nothing is truncated. A description cannot contain `|`, so that case is reported instead of guessed at.
+**2. Equivalent R documentation** (`examples/valid/makeadsl.R`)
 
-**What is read as a comment.** R files go through R's own tokenizer (`parse()` + `getParseData()`), which never runs the code, so `"# DEFX | ..."` inside a string is ignored. SAS files go through a small conservative lexer that skips `'...'` and `"..."` strings (with doubled-quote escapes) and DATALINES/CARDS blocks. In SAS, only **single-line `/* DEFX | ... */`** comments are tags. A DEFX line inside a multi-line `/* */` comment is reported as V001. A DEFX tag in a `* ... ;` statement comment gets a V012 warning and is ignored. This is not a full SAS parser. Macro quoting (`%str`, `%nrstr`, ...) is not interpreted. Details are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+```r
+# DEFX | ADSL.AGEGR1 | "<65" if AGE < 65;
+# DEFX | ADSL.AGEGR1 | ">=65" if AGE >= 65;
+# DEFX | ADSL.AGEGR1 | missing if AGE is missing
+# DEFX | STUDYID | Assigned
+```
 
-## Validation
+**3. Normalized metadata** (`scan`)
 
-| Code | Severity | Check |
-|---|---|---|
-| V001 | error | Malformed tag: no name, empty field, extra `\|`, comma or invalid identifier, unsupported name form, tag inside a multi-line block comment |
-| V002 | error | Target (dataset.variable, variable, or parameter method's dataset.variable) not in the specification |
-| V003 | error | The same target defined (or commented) in more than one program. Every location is reported |
-| V004 | error | Unsupported type, `Assigned` with a description, a non-Comments tag on a dataset, or Predecessor/Assigned/Comments on a parameter-level name |
-| V005 | error | Predecessor is not one `Dataset.Variable`, refers to itself, or is missing from an in-scope dataset |
-| V006 | error | Conflicting origins for one target in one program, or a variable-only tag overlapping a dataset-specific tag |
-| V007 | exit 1 | Specification missing, unreadable, without Dataset/Variable columns, empty, or with blank/invalid identifiers |
-| V008 | error | File unreadable, R syntax error, or unterminated SAS comment/string |
-| V009 | error | (export) Tagged target has no row in the template |
-| V010 / V012 | warning | DEFX-like comment without `\|`, or in a SAS statement comment. Ignored |
-| V011 | info | Predecessor dataset outside the specification: structure checked, existence not verified |
-| V013 | warning | (export) Variables/Datasets reference a Method/Comment ID that is not in the output |
-| V014 | warning | No DEFX tags found |
+```
+Programs scanned : 3 (SAS 1, R 2)
+Tag lines found  : 48
+Records          : 40 (SAS 15, R 25; 5 multi-line)
 
-Repeated description lines in **one** program are consolidated into a single definition, so they are never flagged as duplicates. Comments tags coexist with a variable's computation or origin tag. The specification only establishes which targets exist. **Nothing here checks that a derivation is clinically or mathematically correct, and a passing run is not evidence of CDISC or Pinnacle 21 conformance.** See [docs/VALIDATION.md](docs/VALIDATION.md).
+  where                  lang  name           type         origin   text
+  makeadae.sas:27;28;29  SAS   ADAE.AERELFL   Computation  Derived  Y if AE.AEREL="RELATED" N if AE.AERE…
+  makeadsl.R:20;21;22    R     ADSL.AGEGR1    Computation  Derived  "<65" if AGE < 65; ">=65" if AGE >= …
+```
 
-## Workbook mapping
+*Rows excerpted; the status column is omitted.*
 
-| Tag | Variables | Methods | Comments | Datasets |
+**4. Invalid variable detection** (`examples/invalid/unknown_variable.R`)
+
+```
+  [ERROR V002] unknown_variable.R:2  ADAE.DOESNOTEXIST is not in the specification
+      fix: check the variable name; ADAE is a known dataset
+
+Validation FAILED: 1 error(s), 0 warning(s), 0 info        # exit code 2
+```
+
+**5. Excel workbook generation** (`export`): all 14 preservation checks pass. They end with `sentinel 'DO_NOT_CHANGE' count unchanged  PASS  template 5, output 5`, followed by:
+
+```
+Workbook         : artifacts/define_like_filled.xlsx
+  Methods rows 18, Comments rows 5, Variables rows updated 34, Datasets rows updated 3
+```
+
+In the output, `ADAE.AERELFL` goes from the template's stale Origin `Assigned` to `Derived` with Method `ADAE.AERELFL`. Its Methods row now holds the three consolidated lines, and the hand-entered `Expression Code` cell is kept. Rows without tags and the `PreserveMe` sheet are unchanged.
+
+### Workbook mapping
+
+| Tag | Variables sheet | Methods | Comments | Datasets |
 |---|---|---|---|---|
-| Computation / Imputation | Origin=`Derived`, Method=`<name>` | ID=Name=`<name>`, Type, Description | | |
-| Predecessor | Origin=`Predecessor`, Predecessor=`<ref>` | | | |
-| Assigned | Origin=`Assigned` | | | |
-| Variable Comments | Comment=`<name>` | | ID=`<name>`, Description | |
-| Dataset Comments | | | ID=`<dataset>`, Description | Comment=`<dataset>` |
-| Variable-only tag | applied to that variable in every dataset | as above | as above | |
-| Parameter-level method | (unchanged) | ID=Name=`<name>` | | |
+| Computation / Imputation | Origin `Derived`, Method = name | ID = Name = name, Type, Description | | |
+| Predecessor | Origin `Predecessor`, Predecessor | | | |
+| Assigned | Origin `Assigned` | | | |
+| Variable Comments | Comment = name | | ID = name, Description | |
+| Dataset Comments | | | ID = dataset, Description | Comment = dataset |
+| Parameter-level method | (unchanged) | ID = Name = name | | |
 
-As in the paper, method and comment IDs are the tag name. Only those tag-owned columns change, and only on rows that a tag targets. All other sheets, columns, rows and values are left alone. Methods/Comments rows from the template that match no tag are dropped by default, which is analogous to the paper's `KEEPTAGS=N`. Pass `--keep-unmatched` to keep them. Matched rows keep their non-DEFX columns (e.g. `Expression Code`).
+As in the paper, method and comment IDs are the tag name. Rows in the template's Methods/Comments sheets that match no tag are dropped by default, which is analogous to the paper's `KEEPTAGS=N`. `--keep-unmatched` keeps them.
 
-Export never overwrites the template. It writes a temporary file next to `--out`, re-opens it, and checks the following against the template:
+## Quality and testing
 
-- sheet names and order
-- identical cell text on non-DEFX sheets
-- unchanged non-DEFX columns and untargeted rows
-- unchanged headers
-- the count of the `DO_NOT_CHANGE` sentinel
+| Check | Result (last run) |
+|---|---|
+| Full suite, local (R 4.6.1, macOS) | **52 tests, 236 expectations: 0 failed, 0 skipped** |
+| Full suite, CI (Ubuntu 24.04, R release) | **52 tests, 236 expectations: 0 failed, 0 skipped**, plus the demo script end to end |
+| `R CMD check --no-manual` (CI and local) | **Status: OK**. 123 expectations pass; 15 tests skip by design (below) |
 
-Only if every check passes is the file renamed into place. It also writes `<out>_meta.csv`, a traceability table of every record used, which plays the role of the paper's metadata dataset, and `<out>_report.md`.
+- The suite covers parsing, validation, workbook export and real `bin/defxbridge` runs, including exit codes, paths with spaces, running from another directory, and piping.
+- To check that the tests detect real faults, three single-line mutations were applied to a scratch copy. Disabling string skipping failed 9 tests. Breaking multi-line consolidation failed 12. Altering one cell on the PreserveMe sheet during export failed 7.
+- **About the skips:** the built package excludes `examples/` and `bin/` (see `.Rbuildignore`), so under `R CMD check` the 15 tests that need the fixtures or the CLI skip. The separate CI job sets `DEFX_REQUIRE_FIXTURES=true` and fails if any test is skipped, so those tests always run there.
+- Run the suite locally with `Rscript -e 'testthat::test_local(".")'`.
 
-The template `examples/define_like_template.xlsx` is synthetic and only imitates the general shape of a define.xlsx. It is **not** a Pinnacle 21 template. Preservation is tested for cell values and sheet structure. Formulas, macros, data validation, conditional formatting and every style detail are **not** promised.
-
-## Synthetic data
-
-`examples/` contains made-up programs (`makeadae.sas`, `makeadsl.R`, `makeadvs.R`), a 71-row specification (ADaM-like ADSL/ADAE/ADVS plus SDTM-like DM/AE/VS/EX, so explicit predecessors can be verified), the template, and invalid examples. No real study or participant data is used. Regenerate the spec and template with `Rscript scripts/create_fixtures.R`.
-
-## Tests and demo
-
-```bash
-Rscript -e 'testthat::test_local(".")'     # parser, validation, workbook, real CLI runs
-./scripts/demo.sh                          # interview walkthrough (DEMO_NO_PAUSE=1 to run straight through)
-```
-
-The CLI tests run `bin/defxbridge` and need the repository layout. Under `R CMD check` (which ignores `examples/` and `bin/`) those tests skip.
+A passing test suite shows that the tool behaves as documented on the synthetic fixtures. **It is not evidence of CDISC compliance or Pinnacle 21 compatibility.** Details are in [docs/VALIDATION.md](docs/VALIDATION.md).
 
 ## Limitations
 
-- Lexical, not semantic: SAS support covers the comment forms listed above. Macro-generated comments, `%include`d files, macro quoting and SAS line-length/encoding quirks are not handled.
-- `.Rmd`/`.qmd` files are not scanned.
-- The specification is a flat Dataset/Variable list. Value-level metadata and codelists are not validated.
-- The Variables-sheet update rules intentionally differ from the paper's macro in a few places (see [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md)), and nothing has been compared against the original macro's output on the same inputs.
-- Compatibility with real Pinnacle 21 define.xlsx files is unverified.
+- **SAS parsing is partial and lexical.** It covers single-line `/* DEFX | ... */` comments, strings, statement comments and DATALINES. Macro quoting, `%include`, macro-generated code and tags inside multi-line block comments are not supported; the last of these is reported as V001.
+- **No Pinnacle 21 compatibility guarantee.** The workbook is a synthetic, define-like template, not a Pinnacle 21-generated define.xlsx. Cell values and sheet structure are preserved and tested. Formulas, macros and all styling are not promised.
+- **No CDISC compliance certification.** DEFX Bridge does not generate define.xml or check CDISC or Pinnacle 21 conformance rules.
+- **Not tested against CBAR production code.** Results have never been compared with the original DEFX macro or `defxit` on the same programs. The Variables-sheet update rules intentionally differ in a few places. See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).
+- **Clinical calculations are not validated.** The specification only establishes which targets exist. Whether a description matches the code, and whether a derivation is correct, still needs human review.
 
-## Attribution
+## Documentation
+
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): discovery, lexing, normalization, validation and export
+- [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md): what the paper describes, what is implemented, and what differs or is unverified
+- [docs/VALIDATION.md](docs/VALIDATION.md): diagnostic codes, and what the tests do and don't establish
+- [docs/DEMO.md](docs/DEMO.md): 90-second live script and interview Q&A
+- [demo/](demo/): how the demo video is built and recorded; narration, storyboard, captions, manifest
+
+## References and attribution
 
 - Brendan Bartley and Megan Hinger, *Do One Task, Get Another Done for Free: Use DEFX Tags in Comments to Fill Out Your define.xml*, PharmaSUG 2026, Paper AP-220. <https://pharmasug.org/proceedings/2026/AP/PharmaSUG-2026-AP-220.pdf>
-- Per the paper's acknowledgments, Megan Hinger created the DEFX macro, Scott Anderson created the `defxit` command-line script, and Shawn Ward heavily tested the original program.
+- Per the paper's acknowledgments, **Megan Hinger** created the original DEFX SAS macro, **Scott Anderson** created the `defxit` command-line script, and **Shawn Ward** heavily tested the original program.
 
-DEFX Bridge is a separate implementation written from the published description. No code from the paper's appendix was copied, and no internal repository or code was used. The tag syntax follows the paper so that the same comments can be read by both tools.
+DEFX Bridge was written from the published description. The tag syntax follows the paper so the same comments can be read by both tools. No appendix code was copied.
 
-## Layout
+## License
 
-```
-R/            discovery, parser (SAS lexer + R tokenizer), normalize, validate, workbook, reports, cli
-bin/          defxbridge (bash entry point) -> inst/cli/run.R
-examples/     valid/, invalid/, spec.csv, define_like_template.xlsx (all synthetic)
-scripts/      demo.sh, create_fixtures.R
-tests/        testthat suites
-docs/         ARCHITECTURE, COMPATIBILITY, VALIDATION, DEMO
-artifacts/    generated outputs (git-ignored)
-```
+MIT, see [LICENSE.md](LICENSE.md). [NOTICE.md](NOTICE.md) explains what the license does and doesn't cover: it covers this repository's code only, not the DEFX concept or third-party packages.
