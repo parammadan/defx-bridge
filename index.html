@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEFX Bridge</title>
+<meta name="description" content="Independent R prototype: DEFX documentation tags from SAS and R programs, validated and exported to a define-like workbook.">
+<style>
+  :root { --bg:#ffffff; --fg:#1d2330; --muted:#5b6475; --line:#e3e6ec; --panel:#f6f7f9; --accent:#2457c5; --ok:#1d7a46; --code:#0f172a; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#14161c; --fg:#e6e8ee; --muted:#9aa3b2; --line:#2a2f3a; --panel:#1b1e26; --accent:#8ab4ff; --ok:#7ad39a; --code:#0b0d12; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.6 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif; }
+  main { max-width:980px; margin:0 auto; padding:48px 16px 64px; }
+  h1 { font-size:44px; margin:0 0 6px; letter-spacing:-.5px; }
+  .sub { font-size:21px; color:var(--accent); margin:0 0 20px; }
+  h2 { font-size:24px; margin:44px 0 12px; border-bottom:1px solid var(--line); padding-bottom:6px; }
+  p, li { color:var(--fg); }
+  .muted { color:var(--muted); font-size:15px; }
+  .note { background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--accent); padding:12px 16px; border-radius:6px; font-size:15px; }
+  .btns { display:flex; flex-wrap:wrap; gap:10px; margin:22px 0 8px; }
+  .btn { display:inline-block; padding:10px 16px; border-radius:6px; border:1px solid var(--line); text-decoration:none; color:var(--fg); background:var(--panel); font-weight:600; }
+  .btn.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  @media (prefers-color-scheme: dark) { .btn.primary { color:#0b0d12; } }
+  pre, code { font-family:Menlo,Consolas,monospace; font-size:14px; }
+  pre { background:var(--code); color:#d7e0f0; padding:14px 16px; border-radius:6px; overflow-x:auto; }
+  .flow { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:12px 0; }
+  .box { border:1px solid var(--line); background:var(--panel); border-radius:6px; padding:8px 12px; font-size:14px; }
+  .arrow { color:var(--muted); }
+  .prov { margin-top:6px; font-size:14px; color:var(--muted); }
+  figure { margin:18px 0 26px; }
+  figure img { width:100%; height:auto; border-radius:6px; border:1px solid var(--line); display:block; }
+  figcaption { font-size:14px; color:var(--muted); margin-top:6px; }
+  ul { padding-left:20px; }
+  footer { margin-top:48px; border-top:1px solid var(--line); padding-top:16px; font-size:14px; color:var(--muted); }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>DEFX Bridge</h1>
+  <p class="sub">Cross-language metadata extraction and validation for SAS and R statistical programs</p>
+  <p>DEFX Bridge reads structured <strong>DEFX</strong> documentation comments from SAS and R programs. It normalizes them into one table that keeps the file and line of every tag line, validates them against an explicit specification, and fills a copy of a synthetic, define-like Excel workbook.</p>
+  <p class="note">An independent research prototype inspired by Brendan Bartley &amp; Megan Hinger, <em>Do One Task, Get Another Done for Free: Use DEFX Tags in Comments to Fill Out Your define.xml</em> (PharmaSUG 2026, AP-220). It is not affiliated with or endorsed by CBAR or PharmaSUG, it contains no code from the paper, and it is not a validated or regulatory tool. All data is synthetic.</p>
+  <div class="btns">
+    <a class="btn primary" href="https://github.com/parammadan/defx-bridge/releases/download/v0.1.0/DEFX_Bridge_Demo.mp4">▶ Demo video (2:00, MP4)</a>
+    <a class="btn" href="https://github.com/parammadan/defx-bridge">GitHub repository</a>
+    <a class="btn" href="https://github.com/parammadan/defx-bridge/releases/tag/v0.1.0">Release v0.1.0</a>
+  </div>
+  <p class="muted">The video is a real recording: every terminal scene is a recorded shell session with real commands, real output, and nothing sped up (<a href="https://github.com/parammadan/defx-bridge/blob/main/demo/video_manifest.md">how it was made</a>). The images below are frames from that video.</p>
+
+  <h2>The problem</h2>
+  <p>Statistical programs contain both the derivation logic and the explanation that reviewers and the define.xml need. Keeping that explanation in a separate document means extra work at the end of a study, and the two can drift apart. The published DEFX approach puts the documentation in structured comments next to the code. DEFX Bridge explores the same convention for <strong>R as well as SAS</strong>, so a study can move programs to R gradually and keep one metadata workflow.</p>
+<pre>/* DEFX | ADAE.AERELFL | Y if AE.AEREL="RELATED"     */     makeadae.sas
+/* DEFX | ADAE.AERELFL | N if AE.AEREL="NOT RELATED" */
+# DEFX | ADSL.AGE | Predecessor | DM.AGE                      makeadsl.R</pre>
+
+  <h2>Architecture</h2>
+  <div class="flow">
+    <span class="box">SAS + R source</span><span class="arrow">→</span>
+    <span class="box">Source extraction<br><span class="muted">SAS lexer · R tokenizer, no code run</span></span><span class="arrow">→</span>
+    <span class="box">DEFX parser</span><span class="arrow">→</span>
+    <span class="box">Metadata normalization<br><span class="muted">multi-line consolidation</span></span><span class="arrow">→</span>
+    <span class="box">Specification validation<br><span class="muted">V001–V014</span></span><span class="arrow">→</span>
+    <span class="box">Excel export + validation report</span>
+  </div>
+  <p class="prov">Provenance runs through every stage: file, line, column and the raw comment text are kept for every tag line.</p>
+
+  <h2>Screenshots</h2>
+  <figure><img src="img/s04.png" alt="scan output: 3 programs, 48 tag lines, 40 records with file:line provenance" loading="lazy">
+    <figcaption><code>scan</code>: 48 tag lines become 40 records (SAS 15, R 25), each with its file:line provenance.</figcaption></figure>
+  <figure><img src="img/s06.png" alt="validate output: ERROR V002 unknown_variable.R:2, exit code 2" loading="lazy">
+    <figcaption>An unknown variable is reported with its file and line, and the command exits with code 2.</figcaption></figure>
+  <figure><img src="img/s07.png" alt="export output: 14 preservation checks all PASS" loading="lazy">
+    <figcaption><code>export</code> writes a copy of the template, reads it back, and keeps it only because all 14 preservation checks pass.</figcaption></figure>
+  <figure><img src="img/s09.png" alt="Variables sheet before and after export" loading="lazy">
+    <figcaption>Cells read back from the generated .xlsx: the stale Origin becomes Derived, and rows without tags keep their hand-entered values.</figcaption></figure>
+
+  <h2>Features</h2>
+  <ul>
+    <li>Supported tags: Computation, Imputation, Predecessor and Assigned; variable and dataset Comments; variable-only tags; and parameter-level AVAL/PARAMCD methods. They work identically in SAS and R.</li>
+    <li>Multi-line descriptions consolidate in source order and are never reported as duplicates. A real cross-program conflict reports both locations.</li>
+    <li>DEFX-like text inside string literals is ignored.</li>
+    <li>Export never overwrites the template. If validation fails, no workbook is written.</li>
+    <li>CLI: <code>scan | validate | export | compare</code>, with exit codes 0 / 2 / 1.</li>
+    <li>52 tests and 236 expectations pass locally and in CI, and <code>R CMD check</code> reports Status OK.</li>
+  </ul>
+
+  <h2>Limitations</h2>
+  <ul>
+    <li>SAS parsing is partial and lexical.</li>
+    <li>There is no Pinnacle 21 compatibility guarantee, and no CDISC certification.</li>
+    <li>It has not been tested against CBAR production code or compared with the original DEFX macro.</li>
+    <li>It does not validate whether clinical calculations are correct.</li>
+  </ul>
+
+  <footer>
+    Credits: DEFX concept and paper by Brendan Bartley &amp; Megan Hinger (PharmaSUG 2026, AP-220). The original DEFX SAS macro is by Megan Hinger, the <code>defxit</code> script by Scott Anderson, and Shawn Ward tested the original program.<br>
+    DEFX Bridge is built by Param Madan. MIT license (code only; see NOTICE.md). Not affiliated with or endorsed by CBAR, the Harvard T.H. Chan School of Public Health, or PharmaSUG.
+  </footer>
+</main>
+</body>
+</html>
