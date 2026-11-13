@@ -100,6 +100,16 @@ parse_cli_args <- function(args, cmd, value_opts, flag_opts) {
 
 stem <- function(p) sub("\\.[^./]*$", "", p)
 
+# Never let an output path overwrite an input (spec, template or a scanned program).
+guard_outputs <- function(outs, protected) {
+  outs <- unlist(outs[!vapply(outs, is.null, logical(1))])
+  if (!length(outs)) return(invisible())
+  key <- function(x) tolower(normalizePath(x, mustWork = FALSE))   # macOS volumes are case-insensitive
+  bad <- outs[key(outs) %in% key(unlist(protected))]
+  if (length(bad))
+    stop(defx_input_error(sprintf("refusing to write an output over an input file: %s", bad[1])))
+}
+
 say <- function(...) emit(sprintf(...))
 
 header_block <- function(res) {
@@ -117,6 +127,7 @@ cmd_scan <- function(args) {
   if (length(o$positional)) usage_error(sprintf("unexpected argument '%s'", o$positional[1]), "scan")
   if (is.null(o$source)) usage_error("--source is required", "scan")
   res <- run_pipeline(o$source, o$spec, recursive = !isTRUE(o[["no-recursive"]]))
+  guard_outputs(list(o$out, o$segments), c(res$sources$path, o$spec))
   say("DEFX Bridge scan")
   header_block(res)
   emit("")
@@ -137,6 +148,8 @@ cmd_validate <- function(args) {
   if (is.null(o$source)) usage_error("--source is required", "validate")
   if (is.null(o$spec)) usage_error("--spec is required", "validate")
   res <- run_pipeline(o$source, o$spec, recursive = !isTRUE(o[["no-recursive"]]))
+  guard_outputs(list(o$out, o$records, o$report, if (!is.null(o$out)) paste0(stem(o$out), ".md")),
+                c(res$sources$path, o$spec))
   say("DEFX Bridge validate")
   header_block(res)
   say("Specification    : %s (%d rows)", o$spec, nrow(res$spec))
@@ -164,6 +177,11 @@ cmd_export <- function(args) {
   if (identical(normalizePath(o$template, mustWork = FALSE), normalizePath(o$out, mustWork = FALSE)))
     usage_error("--out must be a different file from --template (the template is never overwritten)", "export")
   res <- run_pipeline(o$source, o$spec, recursive = !isTRUE(o[["no-recursive"]]))
+  if (!nrow(res$records))
+    stop(defx_input_error(paste("no DEFX tags were found in --source; refusing to export,",
+                                "because an export with no tags would drop every Methods/Comments row")))
+  guard_outputs(list(o$out, o$report, o$meta, paste0(stem(o$out), "_report.md"), paste0(stem(o$out), "_meta.csv")),
+                c(res$sources$path, o$spec, o$template))
   tpl_check <- load_template(o$template)   # fail early on a bad template
   rm(tpl_check)
   say("DEFX Bridge export")
