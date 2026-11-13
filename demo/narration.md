@@ -1,6 +1,6 @@
 # Narration script
 
-The finished video has **no voice track**. Its captions carry the message. This script is for you to read in your own voice: live over the video, while doing the demo yourself, or to record a voiced version later. It is about 260 words, roughly 2 minutes at a relaxed pace. The bracketed times match the video.
+The published video is **AI-narrated** (Kokoro TTS voice `am_onyx`, not a clone of your voice). The spoken script is in `demo/voice_script.json`, each line fitted to its scene's measured length. This file is the longer, human-readable script, kept for reading the demo yourself, live or in your own recording. It's about 260 words, roughly 2 minutes at a relaxed pace, and the bracketed times match the video.
 
 **[0:00] Intro**
 This is DEFX Bridge. It's an independent R prototype built on the DEFX approach that Brendan Bartley and Megan Hinger published at PharmaSUG this year: the comments you write to document a derivation also fill in the define.xml.

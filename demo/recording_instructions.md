@@ -33,9 +33,9 @@ If the machine is busy (other apps, swap), VHS can't keep up and the real-time g
 
 `demo/work/` holds intermediate clips (a few MB) and can be deleted after the final video is verified. It is git-ignored.
 
-## Optional: record a voiced version
+## Optional: record a version in your own voice
 
-The shipped video is captioned with no voice. To add your own voice:
+The published video uses an AI narrator (`python3 demo/add_voice.py`; see `video_manifest.md`). To use your own voice instead:
 
 1. Play `demo/DEFX_Bridge_Demo.mp4` and read `narration.md` along with it, recording with QuickTime (File → New Audio Recording) to `voice.m4a`.
 2. Mux the audio in without re-encoding the video:
@@ -57,7 +57,7 @@ There was no spreadsheet application on the build machine, so the video shows th
 
 ## YouTube
 
-Published (Unlisted) on 2026-11-12: https://youtu.be/vZMdirVglzE, uploaded through YouTube Studio. The text originally prepared for it is kept below for reference. The live description is the version supplied with the upload request.
+Published (Unlisted) on 2026-11-12: https://youtu.be/h273icslijc. This is the AI-narrated version (`python3 demo/add_voice.py`), uploaded through YouTube Studio. The text originally prepared for it is kept below for reference. The live description is the version supplied with the upload request.
 
 - **Title:** DEFX Bridge — SAS & R Metadata Automation | Live Demo
 - **Description:**

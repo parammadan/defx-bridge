@@ -5,11 +5,12 @@
 | Property | Value (measured with ffprobe / shasum) |
 |---|---|
 | File | `demo/DEFX_Bridge_Demo.mp4`. Not committed to git; attached to the v0.1.0 GitHub Release |
-| YouTube | https://youtu.be/vZMdirVglzE (Unlisted, channel @parammadan3544, uploaded 2026-11-12). Same file, not re-encoded by us; English subtitle track uploaded from `captions.srt`; category Science and technology; not made for kids |
+| YouTube | https://youtu.be/h273icslijc (Unlisted, channel @parammadan3544, uploaded 2026-11-12): the **voiced** version below, with an English subtitle track of the spoken words (`captions_voiced.srt`); category Science and technology; not made for kids |
+| Voiced version | `demo/DEFX_Bridge_Demo_voiced.mp4`, made by `demo/add_voice.py`: the **same video stream** (identical stream MD5 `0ef6a5c16cf0700d9dc1ac3dbd55d731`) plus AI narration from Kokoro TTS voice `am_onyx` (not the author's voice). AAC 48 kHz stereo, −16.5 LUFS. 120.03 s, 5,496,432 bytes, SHA-256 `e2538765ac40bd0851e92775d162757dd51fde62a17bdd645d4e3aaa4098f121`. Script: `demo/voice_script.json`. Every clip was read back by Whisper and fits inside its scene. Also attached to the v0.1.0 release |
 | Duration | 120.03 s |
 | Resolution / frame rate | 1920 × 1080, 30 fps |
 | Video | H.264 (High profile), yuv420p, about 219 kb/s |
-| Audio | **none**. Narration is shown as burned-in captions. `captions.srt` has the same text, and `narration.md` is a script to read aloud |
+| Audio | **none** in this captions-only file. The voiced version (below) adds AI narration |
 | File size | 3,290,137 bytes (3.1 MiB) |
 | SHA-256 | `d61cefc6cdc957289765b404a5e406adc74396f5dfaa0bcca1b5a7516c44f5cd` |
 | Built | 2026-11-12, macOS 26.4 (Apple Silicon), R 4.6.1, VHS 0.12.1, ffmpeg 9.0.2, Chrome 157 |

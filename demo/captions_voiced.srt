@@ -1,0 +1,39 @@
+1
+00:00:00,200 --> 00:00:06,792
+This is DEFX Bridge. It brings a single documentation convention to both SAS and R.
+
+2
+00:00:07,500 --> 00:00:15,948
+In this SAS program, each DEFX comment documents the code beside it. These three lines are one method, not three duplicates.
+
+3
+00:00:17,930 --> 00:00:27,807
+This R program uses exactly the same syntax, as R comments. Line forty-nine is a trap: a string that looks like a tag. It's code, so the tool ignores it.
+
+4
+00:00:30,570 --> 00:00:39,807
+Scan reads both languages without running them. Forty-eight tag lines become forty records, each keeping its file and line numbers for traceability.
+
+5
+00:00:43,230 --> 00:00:48,627
+Validation checks every target against a synthetic specification. Zero errors.
+
+6
+00:00:50,900 --> 00:01:01,119
+Now a tag naming a variable that isn't in the spec. It's reported with its file name and line number, and the command exits with code two. Errors are never silently accepted.
+
+7
+00:01:04,230 --> 00:01:11,035
+Export fills a copy of the workbook, reads it back, and keeps it only because all fourteen preservation checks pass.
+
+8
+00:01:15,870 --> 00:01:27,497
+This is the generated file itself. The three lines are now one method description, and the hand-entered cell beside it is still there. The PreserveMe sheet is untouched, including its sentinel value.
+
+9
+00:01:32,700 --> 00:01:43,217
+In the template, this flag had a stale origin of Assigned. After export it's Derived, with its method. Rows without tags, like the sequence number, keep their hand-entered values.
+
+10
+00:01:50,530 --> 00:01:58,679
+One shared convention lets a study adopt R gradually, one program at a time. The code is on GitHub. Synthetic data only.

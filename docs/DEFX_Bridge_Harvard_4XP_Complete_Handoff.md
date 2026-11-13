@@ -429,14 +429,14 @@ scripts/show_sheet.R artifacts/define_like_filled.xlsx Methods --cols ID,Type,De
 
 **The video:** `demo/build_video.py` generates it.
 
-- **Content:** every terminal scene is a VHS recording of a real bash session, built after deleting `artifacts/` so nothing on screen is stale. The cards and caption bar are HTML rendered with headless Chrome. There is **no voice track**, only captions: burned in, plus an English subtitle track from `demo/captions.srt`.
+- **Content:** every terminal scene is a VHS recording of a real bash session, built after deleting `artifacts/` so nothing on screen is stale. The cards and caption bar are HTML rendered with headless Chrome. The published version has **AI narration**: Kokoro TTS voice `am_onyx`, not my voice, added by `demo/add_voice.py`. Only an audio track was added; the video stream is bit-identical to the captions-only cut (same stream MD5). Every narration clip was read back by Whisper and fits inside its scene. Burned-in captions remain, plus a subtitle track of the spoken words (`demo/captions_voiced.srt`).
 - **File:** 120.03 s, 1920×1080, H.264, 3,290,137 bytes, SHA-256 `d61cefc6cdc957289765b404a5e406adc74396f5dfaa0bcca1b5a7516c44f5cd`.
 - **Real-time check:** every scene measured 0.93–1.01 of real time.
 - **Documentation:** `demo/video_manifest.md`.
 
 **Links:**
 
-- YouTube (Unlisted): <https://youtu.be/vZMdirVglzE>. Channel "Param Madan" (@parammadan3544). Uploaded 2026-11-12. Playback verified at 1080p, and the published English captions were checked on screen at 23.8 s, 103.9 s and 119.0 s.
+- YouTube (Unlisted, AI-narrated): <https://youtu.be/h273icslijc>. Channel "Param Madan" (@parammadan3544). Uploaded 2026-11-12. Playback verified at 1080p, and the published English captions were checked on screen at 23.8 s, 103.9 s and 119.0 s.
 - MP4 backup: <https://github.com/parammadan/defx-bridge/releases/download/v0.1.0/DEFX_Bridge_Demo.mp4>
 - Project page: <https://parammadan.github.io/defx-bridge/>
 
@@ -640,7 +640,7 @@ I compare content, not bytes. `workbook_content()` reads every sheet as text, an
 | Project page | <https://parammadan.github.io/defx-bridge/> |
 | CI | <https://github.com/parammadan/defx-bridge/actions> |
 | Release v0.1.0 | <https://github.com/parammadan/defx-bridge/releases/tag/v0.1.0> |
-| YouTube (Unlisted) | <https://youtu.be/vZMdirVglzE> |
+| YouTube (Unlisted, AI-narrated) | <https://youtu.be/h273icslijc> |
 | Video file | `~/defx-bridge/demo/DEFX_Bridge_Demo.mp4` (also hard-linked at `~/Desktop/videos/defx-bridge/`) and as a release asset |
 | Paper | <https://pharmasug.org/proceedings/2026/AP/PharmaSUG-2026-AP-220.pdf> |
 | Key source | `R/parser.R`, `R/normalize.R`, `R/validate.R`, `R/workbook.R`, `R/cli.R`, `bin/defxbridge` |
