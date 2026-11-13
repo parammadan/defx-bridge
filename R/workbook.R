@@ -1,8 +1,10 @@
 # Define-like workbook export ---------------------------------------------------
 #
-# Only four sheets are touched (Datasets, Variables, Methods, Comments), and in
-# Datasets/Variables only the tag-owned columns of targeted rows change. Every
-# other sheet, column and cell is left as loaded. The output is written to a
+# Only four sheets are touched. In Datasets/Variables, only the tag-owned cells of
+# targeted rows are written, cell by cell; every other cell (including formulas,
+# numbers and dates) is never rewritten. Methods/Comments are rebuilt from the tags
+# (their rows are re-sorted), so cell types in their non-DEFX columns are written
+# back as read (text/number), and formulas there are not preserved. The output is written to a
 # temporary file in the destination directory, re-opened and checked against
 # the template, and only then renamed into place.
 
@@ -127,7 +129,7 @@ build_workbook_data <- function(records, data, keep_unmatched = FALSE) {
     for (col in names(fill)) if (!is.character(old[[col]])) old[[col]] <- as.character(old[[col]])
     out <- if (length(rows)) do.call(rbind, rows) else old[0, , drop = FALSE]
     if (keep_unmatched) {
-      keep <- old[!old_id %in% new_ids & nzchar(old_id), , drop = FALSE]
+      keep <- old[!old_id %in% new_ids, , drop = FALSE]        # includes blank-ID note rows
       out <- rbind(out, keep)
     }
     out <- out[order(up(out$ID), method = "radix"), , drop = FALSE]
@@ -169,6 +171,20 @@ build_workbook_data <- function(records, data, keep_unmatched = FALSE) {
                       Datasets = sort(unique(touched_ds))))
 }
 
+# Datasets/Variables: write only the tag-owned cells of targeted rows (cell by cell).
+write_owned_cells <- function(wb, sheet, old, new, rows) {
+  for (col in intersect(OWNED_COLS[[sheet]], names(old))) {
+    ci <- match(col, names(old))
+    for (r in rows) {
+      v <- new[[col]][r]
+      openxlsx::deleteData(wb, sheet, cols = ci, rows = r + 1L, gridExpand = TRUE)
+      if (!is.na(v) && nzchar(v))
+        openxlsx::writeData(wb, sheet, v, startCol = ci, startRow = r + 1L, colNames = FALSE)
+    }
+  }
+}
+
+# Methods/Comments: rebuilt from the tags (rows are re-sorted by ID).
 write_sheet <- function(wb, sheet, old, new) {
   nr <- max(nrow(old), nrow(new)) + 1L
   nc <- max(ncol(old), ncol(new))
@@ -210,7 +226,8 @@ workbooks_equivalent <- function(a, b) {
 #' Verify that an exported workbook preserved everything it should.
 #'
 #' @return data.frame(check, result, detail) with result PASS/FAIL.
-verify_export <- function(template_path, out_path, touched, sentinel = "DO_NOT_CHANGE") {
+verify_export <- function(template_path, out_path, touched, sentinel = "DO_NOT_CHANGE",
+                          expected = NULL) {
   a <- workbook_content(template_path); b <- workbook_content(out_path)
   res <- list()
   chk <- function(check, pass, detail) res[[length(res) + 1L]] <<-
@@ -255,9 +272,43 @@ verify_export <- function(template_path, out_path, touched, sentinel = "DO_NOT_C
         sprintf("%d matched ID(s); columns: %s", length(common),
                 if (length(keep)) paste(hx[keep], collapse = ", ") else "none"))
   }
-  count_sentinel <- function(w) sum(vapply(w, function(x) sum(unlist(x) == sentinel, na.rm = TRUE),
-                                           numeric(1)))
-  ns_a <- count_sentinel(a); ns_b <- count_sentinel(b)
+  # Targeted cells must hold exactly what the tags dictate (not just "everything else unchanged").
+  if (!is.null(expected)) {
+    as_df <- function(x) { h <- unlist(x[1, ]); d <- x[-1, , drop = FALSE]; names(d) <- h; d }
+    txt <- function(v) { v <- as.character(v); v[!is.na(v) & !nzchar(v)] <- NA; v }
+    for (s in c("Datasets", "Variables")) {
+      got <- as_df(b[[s]]); rows <- touched[[s]]
+      cols <- intersect(OWNED_COLS[[s]], names(expected[[s]]))
+      ok <- all(vapply(cols, function(cl) identical(txt(got[[cl]][rows]), txt(expected[[s]][[cl]][rows])),
+                       logical(1)))
+      chk(sprintf("%s: tagged cells hold the tag values", s), ok,
+          sprintf("%d rows x %d owned columns", length(rows), length(cols)))
+    }
+    for (s in c("Methods", "Comments")) {
+      got <- as_df(b[[s]]); cols <- REQUIRED_COLS[[s]]
+      ok <- nrow(got) == nrow(expected[[s]]) &&
+        all(vapply(cols, function(cl) identical(txt(got[[cl]]), txt(expected[[s]][[cl]])), logical(1)))
+      chk(sprintf("%s: rows equal the tag-built sheet", s), ok,
+          sprintf("%d rows; columns %s", nrow(got), paste(cols, collapse = ", ")))
+    }
+  }
+  # Sentinel: counted only where content must survive (other sheets, Datasets, Variables,
+  # and Methods/Comments rows that exist in both files). Dropped unmatched rows don't count.
+  count_sentinel <- function(w, keep_ids) {
+    n <- 0
+    for (s in names(w)) {
+      x <- w[[s]]
+      if (s %in% c("Methods", "Comments") && nrow(x) > 1) {
+        idc <- which(unlist(x[1, ]) == "ID")
+        x <- x[c(TRUE, up(x[[idc]][-1]) %in% keep_ids), , drop = FALSE]
+      }
+      n <- n + sum(unlist(x) == sentinel, na.rm = TRUE)
+    }
+    n
+  }
+  ids <- function(w, s) { x <- w[[s]]; if (nrow(x) < 2) character() else up(x[[which(unlist(x[1, ]) == "ID")]][-1]) }
+  both <- c(intersect(ids(a, "Methods"), ids(b, "Methods")), intersect(ids(a, "Comments"), ids(b, "Comments")))
+  ns_a <- count_sentinel(a, both); ns_b <- count_sentinel(b, both)
   chk(sprintf("sentinel '%s' count unchanged", sentinel), ns_a == ns_b,
       sprintf("template %d, output %d", ns_a, ns_b))
   do.call(rbind, res)
@@ -274,6 +325,8 @@ export_defx_workbook <- function(records, template_path, out_path, keep_unmatche
   op <- normalizePath(out_path, mustWork = FALSE)
   if (identical(tp, op))
     stop(defx_input_error("--out must be a different file from --template (the template is never overwritten)"))
+  if (dir.exists(op))
+    stop(defx_input_error(sprintf("--out is a directory, not a file: %s", out_path)))
   if (any(records$status == "error"))
     stop("internal: export_defx_workbook() called with error records")
   tpl <- load_template(template_path)
@@ -281,12 +334,14 @@ export_defx_workbook <- function(records, template_path, out_path, keep_unmatche
   if (any(built$diagnostics$severity == "error"))
     return(list(out = NULL, diagnostics = built$diagnostics, checks = NULL, counts = NULL))
   wb <- tpl$wb
-  for (s in DEFX_SHEETS) write_sheet(wb, s, tpl$data[[s]], built$data[[s]])
+  for (s in c("Datasets", "Variables"))
+    write_owned_cells(wb, s, tpl$data[[s]], built$data[[s]], built$touched[[s]])
+  for (s in c("Methods", "Comments")) write_sheet(wb, s, tpl$data[[s]], built$data[[s]])
   dir.create(dirname(op), recursive = TRUE, showWarnings = FALSE)
   tmp <- tempfile(pattern = ".defx-", tmpdir = dirname(op), fileext = ".xlsx")
   on.exit(if (file.exists(tmp)) unlink(tmp), add = TRUE)
   openxlsx::saveWorkbook(wb, tmp, overwrite = TRUE)
-  checks <- verify_export(template_path, tmp, built$touched)
+  checks <- verify_export(template_path, tmp, built$touched, expected = built$data)
   if (any(checks$result == "FAIL"))
     return(list(out = NULL, diagnostics = built$diagnostics, checks = checks, counts = NULL))
   if (!file.rename(tmp, op)) {
