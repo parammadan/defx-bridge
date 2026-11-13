@@ -34,7 +34,8 @@ test_that("V003: different origin types for one target in two programs also conf
   d <- new_tmp()
   write_src(d, "a.sas", "/* DEFX | ADAE.AETERM | Predecessor | AE.AETERM */")
   write_src(d, "b.R", "# DEFX | ADAE.AETERM | Assigned")
-  expect_true(all(errors(run_dir(d, mini_spec(d)))$code == "V003"))
+  e <- errors(run_dir(d, mini_spec(d)))
+  expect_equal(e$code, c("V003", "V003"))   # not all(logical(0)), which is vacuously TRUE
 })
 
 test_that("V003: comments for the same target in two programs conflict", {
