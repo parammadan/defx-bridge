@@ -126,6 +126,27 @@ const hlCell = (on: number, color: string): React.CSSProperties =>
   ({ background: `rgba(${color === 'green' ? '61,220,151' : color === 'amber' ? '255,200,87' : '255,77,109'},${0.35 * on})`,
      outline: on > 0.01 ? `3px solid ${color === 'green' ? '#1f9d63' : color === 'amber' ? '#d39a12' : '#d92d4b'}` : 'none', outlineOffset: -3 });
 
+/* ---------- s00: author introduction (on-screen text only, no voice) ---------- */
+export const DefxIntro: React.FC = () => {
+  const { s } = useT();
+  return (
+    <Stage>
+      <div style={{ position: 'absolute', left: 160, top: 330, fontSize: 84, fontWeight: 800, letterSpacing: -2, opacity: fade(s, 0.2, 0.9),
+        transform: `translateY(${(1 - fade(s, 0.2, 0.9)) * 18}px)` }}>
+        Hi, I'm <span style={{ color: CYAN }}>Param Madan</span>.
+      </div>
+      <div style={{ position: 'absolute', left: 160, top: 470, width: 1560, fontSize: 44, lineHeight: 1.4, color: TEXT, opacity: fade(s, 1.0, 1.8) }}>
+        I built <span style={{ fontWeight: 700 }}>DEFX Bridge</span>, an independent R-based prototype inspired by the DEFX work presented at
+        <span style={{ color: AMBER }}> PharmaSUG 2026</span>.
+      </div>
+      <div style={{ position: 'absolute', left: 160, top: 640, width: 220, height: 4, background: CYAN, opacity: fade(s, 1.6, 2.2) }} />
+      <div style={{ position: 'absolute', left: 160, top: 670, fontFamily: MONO, fontSize: 24, color: DIM, opacity: fade(s, 2.0, 2.6) }}>
+        github.com/parammadan/defx-bridge
+      </div>
+    </Stage>
+  );
+};
+
 /* ---------- s01: the problem ---------- */
 export const DefxHook: React.FC = () => {
   const { s } = useT();
@@ -415,24 +436,35 @@ export const DefxClose: React.FC = () => {
   const { s } = useT();
   return (
     <Stage>
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 250, textAlign: 'center', fontSize: 120, fontWeight: 800, letterSpacing: -3, opacity: fade(s, 0.2, 1.0) }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 200, textAlign: 'center', fontSize: 120, fontWeight: 800, letterSpacing: -3, opacity: fade(s, 0.2, 1.0) }}>
         DEFX Bridge
       </div>
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 410, textAlign: 'center', fontSize: 46, color: DIM, opacity: fade(s, 0.8, 1.6) }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 360, textAlign: 'center', fontSize: 46, color: DIM, opacity: fade(s, 0.8, 1.6) }}>
         Structured metadata across <span style={{ color: AMBER }}>SAS</span> and <span style={{ color: CYAN }}>R</span>.
       </div>
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 500, textAlign: 'center', fontSize: 30, color: GREEN, opacity: fade(s, 1.8, 2.6) }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 450, textAlign: 'center', fontSize: 30, color: GREEN, opacity: fade(s, 1.8, 2.6) }}>
         An independent research prototype · synthetic data · read, never executed
       </div>
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 600, textAlign: 'center', fontSize: 36, fontWeight: 600, opacity: fade(s, 2.8, 3.6) }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 545, textAlign: 'center', fontSize: 36, fontWeight: 600, opacity: fade(s, 2.8, 3.6) }}>
         Designed and developed by Param Madan
       </div>
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 662, textAlign: 'center', fontFamily: MONO, fontSize: 27, color: CYAN, opacity: fade(s, 3.2, 4.0) }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 607, textAlign: 'center', fontFamily: MONO, fontSize: 27, color: CYAN, opacity: fade(s, 3.2, 4.0) }}>
         github.com/parammadan/defx-bridge · parammadan.github.io/defx-bridge
       </div>
-      <div style={{ position: 'absolute', left: 160, right: 160, top: 820, textAlign: 'center', fontSize: 22, lineHeight: 1.6, color: DIM, opacity: fade(s, 4.2, 5.0) }}>
-        DEFX concept and paper: Brendan Bartley &amp; Megan Hinger (PharmaSUG 2026, AP-220) · original DEFX SAS macro: Megan Hinger ·
-        defxit: Scott Anderson · testing: Shawn Ward. DEFX Bridge is a separate implementation with no code from the paper.
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 760, textAlign: 'center', fontFamily: MONO, fontSize: 20, letterSpacing: 4, color: CYAN, opacity: fade(s, 4.0, 4.6) }}>
+        ORIGINAL DEFX WORK
+      </div>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 800, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, fontSize: 27, color: DIM }}>
+        {[['Megan Hinger', 'creator of the original DEFX SAS macro and paper coauthor'],
+          ['Brendan Bartley', 'PharmaSUG 2026 paper coauthor (AP-220)'],
+          ['Scott Anderson', 'creator of the defxit Linux command-line utility']].map(([n, r], i) => (
+          <div key={n} style={{ opacity: fade(s, 4.3 + i * 0.35, 4.9 + i * 0.35) }}>
+            <span style={{ color: TEXT, fontWeight: 600 }}>{n}</span> · {r}
+          </div>
+        ))}
+      </div>
+      <div style={{ position: 'absolute', left: 160, right: 160, top: 935, textAlign: 'center', fontSize: 19, lineHeight: 1.5, color: DIM, opacity: fade(s, 5.6, 6.2) }}>
+        Original program testing: Shawn Ward. DEFX Bridge is a separate implementation with no code from the paper.
         Not affiliated with or endorsed by CBAR or PharmaSUG · not a validated or regulatory tool.
       </div>
     </Stage>

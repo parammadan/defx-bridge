@@ -21,3 +21,18 @@
 | s08 | 1:39–1:55 | **Closing** | "DEFX Bridge / Structured metadata across SAS and R / independent research prototype · synthetic data · read, never executed / Designed and developed by Param Madan", the repo and project-page URLs, full credits and a disclaimer | n/a |
 
 **Edits:** fades between scenes; s05 at 1.2×; the s07 test run cut, both labelled on screen. Nothing else is accelerated, and no output is simulated.
+
+## V2.1 (author intro + clearer credits): `demo/DEFX_Bridge_Demo_V2.1.mp4`
+
+120.39 s, 1920×1080, H.264 + AAC (−16.6 LUFS), 9,774,633 bytes, SHA-256 `93713a7b6a49cce7d76d8ef595c17775ed732eab88f5648aef0993dce73ebdf5`. Captions: `V2.1_CAPTIONS.srt` (25 cues). **Not published.**
+
+Only two scenes changed, and V2 stays untouched:
+
+- **s00 (new, 0:00–0:05.5), on-screen text only, no voice:** "Hi, I'm Param Madan." / "I built DEFX Bridge, an independent R-based prototype inspired by the DEFX work presented at PharmaSUG 2026." / github.com/parammadan/defx-bridge
+- **s08 closing credits (from 1:48.7),** headed "ORIGINAL DEFX WORK":
+  - "Megan Hinger · creator of the original DEFX SAS macro and paper coauthor"
+  - "Brendan Bartley · PharmaSUG 2026 paper coauthor (AP-220)"
+  - "Scott Anderson · creator of the defxit Linux command-line utility"
+  - then "Original program testing: Shawn Ward…" and the disclaimer
+
+Scenes s01–s07 use the same rendered clips and audio as V2. Frames compared at six points (V2 *t* vs V2.1 *t* + 5.5 s) have SSIM 1.000.
