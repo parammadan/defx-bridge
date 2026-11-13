@@ -112,7 +112,11 @@ validate_defx_metadata <- function(records, spec) {
 
   # --- V003: same target defined in more than one program
   kind <- ifelse(ok$type == "Comments", "comment", "origin")
-  grp <- split(seq_len(nrow(ok)), paste(ok$name, kind, sep = "\r"))
+  # Canonical target: the two published parameter spellings, AVAL.ADVS.PARAMCD.EQ.SYSBP and
+  # ADVS.AVAL.SYSBP, name the same (dataset, variable, value), so they must collide in V003/V006.
+  target <- ifelse(ok$scope == "parameter",
+                   paste("PARAM", ok$dataset, ok$variable, ok$parameter, sep = "."), ok$name)
+  grp <- split(seq_len(nrow(ok)), paste(target, kind, sep = "\r"))
   for (g in grp) {
     files <- unique(ok$source_file[g])
     if (length(files) < 2) next
@@ -129,7 +133,7 @@ validate_defx_metadata <- function(records, spec) {
 
   # --- V006 (a): one program gives conflicting origin types for one target
   o <- which(kind == "origin")
-  grp <- split(o, paste(ok$source_file[o], ok$name[o], sep = "\r"))
+  grp <- split(o, paste(ok$source_file[o], target[o], sep = "\r"))
   for (g in grp) {
     if (length(unique(ok$type[g])) < 2) next
     for (k in g) {
@@ -171,7 +175,7 @@ apply_status <- function(records, diags) {
     lines <- as.integer(strsplit(records$source_lines[k], ";", fixed = TRUE)[[1]])
     hit <- diags$source_file == records$source_file[k] &
       diags$source_line %in% lines &
-      (diags$name == records$name[k] | !nzchar(diags$name))
+      diags$name == records$name[k]        # an unnamed note on the same line belongs to another comment
     sev <- diags$severity[hit]
     records$status[k] <- if ("error" %in% sev) "error" else if ("warning" %in% sev)
       "warning" else if (records$status[k] == "malformed") "error" else "ok"
