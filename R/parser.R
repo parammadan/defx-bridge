@@ -118,16 +118,25 @@ lex_sas_comments <- function(lines) {
     }
 
     if (c == ";") {
-      stmt <- if (i > stmt_from) tolower(trimws(paste(ch[stmt_from:(i - 1L)], collapse = ""))) else ""
+      stmt <- if (i > stmt_from) paste(ch[stmt_from:(i - 1L)], collapse = "") else ""
+      stmt <- tolower(trimws(gsub("(?s)/\\*.*?\\*/", " ", stmt, perl = TRUE)))   # comments are not statement text
       i <- i + 1L
       if (grepl("^(datalines|cards|lines|parmcards)4$", stmt)) {
-        end <- regexpr(";;;;", paste(ch[i:n], collapse = ""), fixed = TRUE)
-        j <- if (end > 0) i + end + 2L else n
+        end <- if (i <= n) regexpr(";;;;", paste(ch[i:n], collapse = ""), fixed = TRUE) else -1L
+        if (end < 0) {
+          problems <- c(problems, sprintf("line %d: DATALINES4/CARDS4 block is never closed with ;;;;", line))
+          break
+        }
+        j <- i + end + 2L
         advance_newlines(i, j); i <- j + 1L
       } else if (grepl("^(datalines|cards|lines|parmcards)$", stmt)) {
         j <- i
         while (j <= n && ch[j] != ";") j <- j + 1L
-        advance_newlines(i, min(j, n)); i <- j + 1L
+        if (j > n) {
+          problems <- c(problems, sprintf("line %d: DATALINES/CARDS block is never closed with ;", line))
+          break
+        }
+        advance_newlines(i, j); i <- j + 1L
       }
       stmt_start <- TRUE
       stmt_from <- i
@@ -227,6 +236,12 @@ parse_defx_tag <- function(body) {
                       "<Dataset>.<Variable>.<Value>, AVAL.<Dataset>.PARAMCD.EQ.<Value>"),
                 name))
   }
+
+  # dataset/variable parts must be SAS-style names; only a trailing parameter value may start with a digit
+  id_parts <- if (form == "parameter") parts[-length(parts)] else parts
+  if (any(!grepl("^[A-Z_][A-Z0-9_]*$", id_parts)))
+    return(fail("V001", sprintf("dataset/variable names must start with a letter or underscore: '%s'", rest[1]),
+                "use valid SAS names, e.g. ADSL.AGE1 instead of ADSL.1AGE", name))
 
   type_kw <- c(computation = "Computation", imputation = "Imputation",
                predecessor = "Predecessor", assigned = "Assigned",
@@ -363,6 +378,13 @@ extract_tags_file <- function(path, source_file, language) {
                 diagnostics = new_diag("V008", "error", source_file,
                                        message = sprintf("cannot read file: %s",
                                                          conditionMessage(lines)))))
+  }
+  bad <- which(!validUTF8(lines))
+  if (length(bad)) {
+    return(list(segments = empty_segments(),
+                diagnostics = new_diag("V008", "error", source_file, source_line = bad[1],
+                  message = sprintf("file is not valid UTF-8 (first bad byte on line %d); tags in this file were NOT extracted", bad[1]),
+                  suggestion = "re-save the program as UTF-8 (e.g. iconv -f WINDOWS-1252 -t UTF-8)")))
   }
   lx <- if (language == "SAS") lex_sas_comments(lines) else lex_r_comments(lines, source_file)
   pd <- parse_defx_comments(lx$comments, source_file, language)
