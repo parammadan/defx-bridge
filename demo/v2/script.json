@@ -1,0 +1,50 @@
+[
+ {
+  "id": "s01",
+  "kind": "anim",
+  "visual": "DefxHook",
+  "text": "In clinical programming, every derivation is explained twice: once in the code, and again, by hand, in the define dot X M L metadata. What if the comment beside the code could be the metadata?"
+ },
+ {
+  "id": "s02",
+  "kind": "anim",
+  "visual": "DefxTwoLangs",
+  "text": "That's the D E F X approach, published by Brendan Bartley and Megan Hinger. D E F X Bridge is my independent R prototype. It reads the same tags from SAS and from R, and normalizes both into one metadata table."
+ },
+ {
+  "id": "s03",
+  "kind": "terminal+data",
+  "visual": "DefxScan",
+  "text": "Here is a real scan of three synthetic programs. Forty-eight tag lines become forty records. Nothing is executed; the R language's own parser reads the R files. Each record keeps its dataset, variable and type, and the exact file and lines it came from."
+ },
+ {
+  "id": "s04",
+  "kind": "terminal+zoom",
+  "visual": "DefxFail",
+  "text": "Now a real mistake. This tag points at a variable that isn't in the specification. Validation catches it, names the file and the line, and exits with code two, so nothing downstream can quietly continue."
+ },
+ {
+  "id": "s05",
+  "kind": "terminal",
+  "visual": "DefxFix",
+  "text": "I correct the reference in a copy of the file. The difference is one line. The same command now passes, with zero errors and exit code zero."
+ },
+ {
+  "id": "s06",
+  "kind": "workbook",
+  "visual": "DefxWorkbook",
+  "text": "Export fills a copy of a define-like workbook. The three tag lines become one method description. The stale origin on that variable becomes Derived, with a method reference that resolves. Hand-entered cells, including the expression code, stay exactly as they were."
+ },
+ {
+  "id": "s07",
+  "kind": "evidence",
+  "visual": "DefxVerify",
+  "text": "Before the file is kept, it is read back with a different library and compared with the template, cell by cell: eighteen checks, all passing. Sixty-six automated tests pass locally and on GitHub's CI, where nothing is allowed to skip."
+ },
+ {
+  "id": "s08",
+  "kind": "anim",
+  "visual": "DefxClose",
+  "text": "D E F X Bridge. One documentation convention across SAS and R, so a study can adopt R gradually, one program at a time. An independent research prototype, built with credit to the original D E F X authors."
+ }
+]

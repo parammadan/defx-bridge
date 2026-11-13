@@ -1,0 +1,367 @@
+{
+ "records": [
+  {
+   "source_file": "makeadae.sas",
+   "source_lines": "27;28;29",
+   "language": "SAS",
+   "name": "ADAE.AERELFL",
+   "type": "Computation",
+   "origin": "Derived",
+   "predecessor": "",
+   "description": "Y if AE.AEREL=\"RELATED\" N if AE.AEREL=\"NOT RELATED\" otherwise set to missing"
+  },
+  {
+   "source_file": "makeadae.sas",
+   "source_lines": "20",
+   "language": "SAS",
+   "name": "ADAE.AETERM",
+   "type": "Predecessor",
+   "origin": "Predecessor",
+   "predecessor": "AE.AETERM",
+   "description": ""
+  },
+  {
+   "source_file": "makeadae.sas",
+   "source_lines": "44;45",
+   "language": "SAS",
+   "name": "ADAE.ASTDT",
+   "type": "Imputation",
+   "origin": "Derived",
+   "predecessor": "",
+   "description": "AE.AESTDTC as a SAS date; if only the day is missing, impute day 1 of the month (synthetic rule)"
+  },
+  {
+   "source_file": "makeadsl.R",
+   "source_lines": "20;21;22",
+   "language": "R",
+   "name": "ADSL.AGEGR1",
+   "type": "Computation",
+   "origin": "Derived",
+   "predecessor": "",
+   "description": "\"<65\" if AGE < 65; \">=65\" if AGE >= 65; missing if AGE is missing"
+  },
+  {
+   "source_file": "makeadsl.R",
+   "source_lines": "10",
+   "language": "R",
+   "name": "STUDYID",
+   "type": "Assigned",
+   "origin": "Assigned",
+   "predecessor": "",
+   "description": ""
+  },
+  {
+   "source_file": "makeadvs.R",
+   "source_lines": "19",
+   "language": "R",
+   "name": "AVAL.ADVS.PARAMCD.EQ.SYSBP",
+   "type": "Computation",
+   "origin": "Derived",
+   "predecessor": "",
+   "description": "VS.VSSTRESN where VS.VSTESTCD = \"SYSBP\" (mmHg)"
+  }
+ ],
+ "record_counts": {
+  "n": 40,
+  "sas": 15,
+  "r": 25,
+  "multiline": 5
+ },
+ "diagnostic": {
+  "code": "V002",
+  "severity": "error",
+  "source_file": "unknown_variable.R",
+  "source_line": "2",
+  "name": "ADAE.DOESNOTEXIST",
+  "message": "ADAE.DOESNOTEXIST is not in the specification",
+  "suggestion": "check the variable name; ADAE is a known dataset"
+ },
+ "invalid_source": [
+  "# SYNTHETIC invalid example: the target variable is not in examples/spec.csv.",
+  "# DEFX | ADAE.DOESNOTEXIST | Invalid example",
+  "# DEFX | ADAE.ASTDY | ASTDT - ADSL.TRTSDT + 1 (valid tag next to the invalid one)"
+ ],
+ "fixed_source": [
+  "# SYNTHETIC invalid example: the target variable is not in examples/spec.csv.",
+  "# DEFX | ADAE.TRTEMFL | Invalid example",
+  "# DEFX | ADAE.ASTDY | ASTDT - ADSL.TRTSDT + 1 (valid tag next to the invalid one)"
+ ],
+ "variables": {
+  "cols": [
+   "Dataset",
+   "Variable",
+   "Label",
+   "Origin",
+   "Predecessor",
+   "Method",
+   "Comment",
+   "Developer Notes"
+  ],
+  "rows": [
+   [
+    "ADAE",
+    "AESEQ",
+    "Sequence Number",
+    "Predecessor",
+    "AE.AESEQ",
+    "",
+    "",
+    "manually entered - no DEFX tag; must survive export"
+   ],
+   [
+    "ADAE",
+    "AETERM",
+    "Reported Term for the Adverse Event",
+    "Predecessor",
+    "AE.AETERM",
+    "",
+    "",
+    ""
+   ],
+   [
+    "ADAE",
+    "AERELFL",
+    "Related Flag (synthetic)",
+    "Derived",
+    "",
+    "ADAE.AERELFL",
+    "ADAE.AERELFL",
+    "stale Origin on purpose: DEFX should replace it"
+   ],
+   [
+    "ADAE",
+    "AESAECAT",
+    "Serious Event Category (synthetic)",
+    "Derived",
+    "",
+    "ADAE.AESAECAT",
+    "",
+    ""
+   ],
+   [
+    "ADAE",
+    "ASTDT",
+    "Analysis Start Date",
+    "Derived",
+    "",
+    "ADAE.ASTDT",
+    "",
+    ""
+   ],
+   [
+    "ADAE",
+    "TRTEMFL",
+    "Treatment Emergent Analysis Flag",
+    "Derived",
+    "",
+    "ADAE.TRTEMFL",
+    "",
+    "DO_NOT_CHANGE"
+   ]
+  ],
+  "template": [
+   [
+    "ADAE",
+    "AESEQ",
+    "Sequence Number",
+    "Predecessor",
+    "AE.AESEQ",
+    "",
+    "",
+    "manually entered - no DEFX tag; must survive export"
+   ],
+   [
+    "ADAE",
+    "AETERM",
+    "Reported Term for the Adverse Event",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   [
+    "ADAE",
+    "AERELFL",
+    "Related Flag (synthetic)",
+    "Assigned",
+    "",
+    "",
+    "",
+    "stale Origin on purpose: DEFX should replace it"
+   ],
+   [
+    "ADAE",
+    "AESAECAT",
+    "Serious Event Category (synthetic)",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   [
+    "ADAE",
+    "ASTDT",
+    "Analysis Start Date",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   [
+    "ADAE",
+    "TRTEMFL",
+    "Treatment Emergent Analysis Flag",
+    "",
+    "",
+    "",
+    "",
+    "DO_NOT_CHANGE"
+   ]
+  ]
+ },
+ "method": {
+  "ID": "ADAE.AERELFL",
+  "Type": "Computation",
+  "Description": "Y if AE.AEREL=\"RELATED\" N if AE.AEREL=\"NOT RELATED\" otherwise set to missing",
+  "Expression Context": "SAS 9.4",
+  "Expression Code": "DO_NOT_CHANGE"
+ },
+ "method_template": {
+  "ID": "ADAE.AERELFL",
+  "Type": "Computation",
+  "Description": "STALE draft text typed by hand - DEFX should replace it",
+  "Expression Context": "SAS 9.4",
+  "Expression Code": "DO_NOT_CHANGE"
+ },
+ "method_ids": [
+  "ADAE.AENDT",
+  "ADAE.AERELFL",
+  "ADAE.AESAECAT",
+  "ADAE.ASTDT",
+  "ADAE.ASTDY",
+  "ADAE.TRTEMFL",
+  "ADSL.AGEGR1",
+  "ADSL.ITTFL",
+  "ADSL.SAFFL",
+  "ADSL.TRT01A",
+  "ADSL.TRT01P",
+  "ADSL.TRTEDT",
+  "ADSL.TRTSDT",
+  "ADVS.ADT",
+  "ADVS.AVAL",
+  "ADVS.AVAL.PULSE",
+  "AVAL.ADVS.PARAMCD.EQ.DIABP",
+  "AVAL.ADVS.PARAMCD.EQ.SYSBP"
+ ],
+ "comment": {
+  "ID": "ADAE.AERELFL",
+  "Description": "Synthetic example: relatedness as recorded on the CRF"
+ },
+ "preserve": [
+  [
+   "sentinel",
+   "DO_NOT_CHANGE"
+  ],
+  [
+   "number",
+   "42"
+  ],
+  [
+   "date_text",
+   "2026-11-13"
+  ],
+  [
+   "unicode",
+   "\u00b5g/mL \u2264 5"
+  ]
+ ],
+ "preserve_template_identical": true,
+ "methods_resolvable": {
+  "n": 15,
+  "all": true
+ },
+ "preservation": {
+  "pass": 18,
+  "total": 18,
+  "source": "artifacts/define_like_filled_report.md"
+ },
+ "captured": "2026-11-12",
+ "clips": {
+  "t_scan": {
+   "file": "defx/t_scan.mp4",
+   "duration": 6.44,
+   "realtime_ratio": 0.96,
+   "commands": [
+    "./bin/defxbridge scan --source examples/valid --spec examples/spec.csv --out artifacts/scan.csv | head -n 4"
+   ]
+  },
+  "t_invalid": {
+   "file": "defx/t_invalid.mp4",
+   "duration": 11.56,
+   "realtime_ratio": 0.979,
+   "commands": [
+    "cat examples/invalid/unknown_variable.R",
+    "./bin/defxbridge validate --source examples/invalid/unknown_variable.R --spec examples/spec.csv",
+    "echo \"exit code: $?\""
+   ]
+  },
+  "t_fix": {
+   "file": "defx/t_fix.mp4",
+   "duration": 15.28,
+   "realtime_ratio": 1.076,
+   "commands": [
+    "sed 's/DOESNOTEXIST/TRTEMFL/' examples/invalid/unknown_variable.R > artifacts/fixed.R",
+    "diff examples/invalid/unknown_variable.R artifacts/fixed.R",
+    "./bin/defxbridge validate --source artifacts/fixed.R --spec examples/spec.csv",
+    "echo \"exit code: $?\""
+   ]
+  },
+  "t_export": {
+   "file": "defx/t_export.mp4",
+   "duration": 10.12,
+   "realtime_ratio": 1.033,
+   "commands": [
+    "./bin/defxbridge export --source examples/valid --spec examples/spec.csv \\",
+    "  --template examples/define_like_template.xlsx --out artifacts/define_like_filled.xlsx | tail -n 8"
+   ]
+  },
+  "t_tests": {
+   "file": "defx/t_tests.mp4",
+   "duration": 44.56,
+   "realtime_ratio": 0.976,
+   "commands": [
+    "Rscript -e 'testthat::test_local(\".\")'"
+   ]
+  }
+ },
+ "source": {
+  "sas_file": "makeadae.sas",
+  "sas_from": 27,
+  "sas_lines": [
+   "  /* DEFX | ADAE.AERELFL | Y if AE.AEREL=\"RELATED\"     */",
+   "  /* DEFX | ADAE.AERELFL | N if AE.AEREL=\"NOT RELATED\" */",
+   "  /* DEFX | ADAE.AERELFL | otherwise set to missing    */",
+   "  length aerelfl $1;",
+   "  if upcase(aerel) = \"RELATED\" then aerelfl = \"Y\";",
+   "  else if upcase(aerel) = \"NOT RELATED\" then aerelfl = \"N\";"
+  ],
+  "r_file": "makeadsl.R",
+  "r_from": 20,
+  "r_lines": [
+   "  # DEFX | ADSL.AGEGR1 | \"<65\" if AGE < 65;",
+   "  # DEFX | ADSL.AGEGR1 | \">=65\" if AGE >= 65;",
+   "  # DEFX | ADSL.AGEGR1 | missing if AGE is missing",
+   "  adsl$AGEGR1 <- ifelse(is.na(adsl$AGE), NA_character_,",
+   "                        ifelse(adsl$AGE < 65, \"<65\", \">=65\"))"
+  ]
+ },
+ "ci_captured": "2026-11-12",
+ "tests": {
+  "tests": 66,
+  "expectations": 273,
+  "source": "testthat::test_local(\".\") and CI run 43340253913"
+ }
+}
