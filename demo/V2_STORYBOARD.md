@@ -36,3 +36,11 @@ Only two scenes changed, and V2 stays untouched:
   - then "Original program testing: Shawn Ward…" and the disclaimer
 
 Scenes s01–s07 use the same rendered clips and audio as V2. Frames compared at six points (V2 *t* vs V2.1 *t* + 5.5 s) have SSIM 1.000.
+
+## V2.3 (spoken intro + spoken Scott Anderson credit): `demo/DEFX_Bridge_Demo_V2.3.mp4`
+
+130.19 s, 1920×1080, H.264 + AAC (−16.4 LUFS), 10,371,480 bytes, SHA-256 `d739f0cddca660063823f9a13dd9110805888c7f5aff1fa4a200859928cde3fd`. Captions: `V2.3_CAPTIONS.srt` (26 cues). **Published 2026-11-12 (Unlisted): https://youtu.be/kXeHU1189uY.** V2.1 and V2.2 are kept.
+
+- **s00 (0:00–0:12.8):** the narrator now speaks the intro: "Hi, I'm Param Madan. I built DEFX Bridge, an independent R-based prototype inspired by the DEFX work presented at PharmaSUG 2026." The card is the same as in V2.1.
+- **s02 (0:26–0:44):** the narrator speaks the credit: "That's the DEFX approach, from Megan Hinger and Brendan Bartley, with Scott Anderson's defxit command-line utility." The V2.2 on-screen credit line stays; the scene's later animations are shifted 2.6 s to follow the longer narration.
+- s01 and s03–s08 reuse the V2.2 clips and audio. Frames compared at five points (V2.2 *t* vs V2.3 *t* + 9.89 s) have SSIM 0.998–1.000. A Whisper read-back of the first 50 s confirms both spoken lines.

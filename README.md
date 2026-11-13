@@ -15,9 +15,9 @@ The idea comes from a published SAS workflow: Brendan Bartley and Megan Hinger, 
 
 ## Demo
 
-**▶ [Watch the 2-minute demo on YouTube](https://youtu.be/7UOnir6PzXw)** (unlisted, AI-narrated, with captions). Backup: [download the MP4 from the v0.1.0 release](https://github.com/parammadan/defx-bridge/releases/download/v0.1.0/DEFX_Bridge_Demo_V2.1.mp4). Every terminal scene is a real shell session recorded with [VHS](https://github.com/charmbracelet/vhs): real commands, real output, not sped up. How it was built: [demo/V2_STORYBOARD.md](demo/V2_STORYBOARD.md) and [demo/V2_VIDEO_AUDIT.md](demo/V2_VIDEO_AUDIT.md).
+**▶ [Watch the 2-minute demo on YouTube](https://youtu.be/kXeHU1189uY)** (unlisted, AI-narrated, with captions). Backup: [download the MP4 from the v0.1.0 release](https://github.com/parammadan/defx-bridge/releases/download/v0.1.0/DEFX_Bridge_Demo_V2.3.mp4). Every terminal scene is a real shell session recorded with [VHS](https://github.com/charmbracelet/vhs): real commands, real output, not sped up. How it was built: [demo/V2_STORYBOARD.md](demo/V2_STORYBOARD.md) and [demo/V2_VIDEO_AUDIT.md](demo/V2_VIDEO_AUDIT.md).
 
-[![scan output: 48 tag lines become 40 records with file:line provenance](docs/images/scan.png)](https://youtu.be/7UOnir6PzXw)
+[![scan output: 48 tag lines become 40 records with file:line provenance](docs/images/scan.png)](https://youtu.be/kXeHU1189uY)
 
 *Frame from the demo video: `scan` over one SAS and two R programs.*
 

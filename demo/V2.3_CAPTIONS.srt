@@ -1,0 +1,103 @@
+1
+00:00:00,600 --> 00:00:02,323
+Hi, I'm Param Madan.
+
+2
+00:00:02,373 --> 00:00:11,899
+I built DEFX Bridge, an independent R-based prototype inspired by the DEFX work presented at PharmaSUG 2026.
+
+3
+00:00:13,349 --> 00:00:21,281
+In clinical programming, every derivation is explained twice: once in the code, and again, by hand, in the define.xml metadata.
+
+4
+00:00:21,331 --> 00:00:24,926
+What if the comment beside the code could be the metadata?
+
+5
+00:00:26,376 --> 00:00:34,117
+That's the DEFX approach, from Megan Hinger and Brendan Bartley, with Scott Anderson's defxit command-line utility.
+
+6
+00:00:34,167 --> 00:00:36,962
+DEFX Bridge is my independent R prototype.
+
+7
+00:00:37,012 --> 00:00:42,923
+It reads the same tags from SAS and from R, and normalizes both into one metadata table.
+
+8
+00:00:44,373 --> 00:00:47,178
+Here is a real scan of three synthetic programs.
+
+9
+00:00:47,228 --> 00:00:49,736
+Forty-eight tag lines become forty records.
+
+10
+00:00:49,786 --> 00:00:53,721
+Nothing is executed; the R language's own parser reads the R files.
+
+11
+00:00:53,771 --> 00:00:59,193
+Each record keeps its dataset, variable and type, and the exact file and lines it came from.
+
+12
+00:01:00,643 --> 00:01:01,750
+Now a real mistake.
+
+13
+00:01:01,800 --> 00:01:05,527
+This tag points at a variable that isn't in the specification.
+
+14
+00:01:05,577 --> 00:01:12,838
+Validation catches it, names the file and the line, and exits with code two, so nothing downstream can quietly continue.
+
+15
+00:01:14,288 --> 00:01:17,011
+I correct the reference in a copy of the file.
+
+16
+00:01:17,061 --> 00:01:18,639
+The difference is one line.
+
+17
+00:01:18,689 --> 00:01:22,558
+The same command now passes, with zero errors and exit code zero.
+
+18
+00:01:24,008 --> 00:01:26,621
+Export fills a copy of a define-like workbook.
+
+19
+00:01:26,671 --> 00:01:29,516
+The three tag lines become one method description.
+
+20
+00:01:29,566 --> 00:01:34,668
+The stale origin on that variable becomes Derived, with a method reference that resolves.
+
+21
+00:01:34,718 --> 00:01:39,126
+Hand-entered cells, including the expression code, stay exactly as they were.
+
+22
+00:01:40,576 --> 00:01:48,491
+Before the file is kept, it is read back with a different library and compared with the template, cell by cell: eighteen checks, all passing.
+
+23
+00:01:48,541 --> 00:01:53,689
+Sixty-six automated tests pass locally and on GitHub's CI, where nothing is allowed to skip.
+
+24
+00:01:55,139 --> 00:01:55,950
+DEFX Bridge.
+
+25
+00:01:56,000 --> 00:02:03,345
+One documentation convention across SAS and R, so a study can adopt R gradually, one program at a time.
+
+26
+00:02:03,395 --> 00:02:09,233
+An independent research prototype, built with credit to the original DEFX authors.
