@@ -5,7 +5,7 @@
 | Property | Value (measured with ffprobe / shasum) |
 |---|---|
 | File | `demo/DEFX_Bridge_Demo.mp4`. Not committed to git; attached to the v0.1.0 GitHub Release |
-| YouTube | https://youtu.be/h273icslijc (Unlisted, channel @parammadan3544, uploaded 2026-11-12): the **voiced** version below, with an English subtitle track of the spoken words (`captions_voiced.srt`); category Science and technology; not made for kids |
+| YouTube | **Current: https://youtu.be/7UOnir6PzXw** (V2.1, Unlisted, uploaded 2026-11-12; see `V2_STORYBOARD.md`). The earlier upload https://youtu.be/h273icslijc (the V1 picture with AI narration) is still Unlisted, with nothing linking to it |
 | Voiced version | `demo/DEFX_Bridge_Demo_voiced.mp4`, made by `demo/add_voice.py`: the **same video stream** (identical stream MD5 `0ef6a5c16cf0700d9dc1ac3dbd55d731`) plus AI narration from Kokoro TTS voice `am_onyx` (not the author's voice). AAC 48 kHz stereo, −16.5 LUFS. 120.03 s, 5,496,432 bytes, SHA-256 `e2538765ac40bd0851e92775d162757dd51fde62a17bdd645d4e3aaa4098f121`. Script: `demo/voice_script.json`. Every clip was read back by Whisper and fits inside its scene. Also attached to the v0.1.0 release |
 | Duration | 120.03 s |
 | Resolution / frame rate | 1920 × 1080, 30 fps |

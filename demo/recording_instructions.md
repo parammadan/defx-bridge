@@ -57,7 +57,7 @@ There was no spreadsheet application on the build machine, so the video shows th
 
 ## YouTube
 
-Published (Unlisted) on 2026-11-12: https://youtu.be/h273icslijc. This is the AI-narrated version (`python3 demo/add_voice.py`), uploaded through YouTube Studio. The text originally prepared for it is kept below for reference. The live description is the version supplied with the upload request.
+Published (Unlisted) on 2026-11-12: **https://youtu.be/7UOnir6PzXw** (demo V2.1: Remotion scenes around real recordings, AI narration, author intro on screen). An earlier upload, https://youtu.be/h273icslijc (V1 picture plus AI narration), is still Unlisted. The text originally prepared for it is kept below for reference. The live description is the version supplied with the upload request.
 
 - **Title:** DEFX Bridge — SAS & R Metadata Automation | Live Demo
 - **Description:**

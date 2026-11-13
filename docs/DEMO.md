@@ -1,6 +1,6 @@
 # Demo guide
 
-**Recorded demo video:** [YouTube (unlisted, AI-narrated)](https://youtu.be/h273icslijc), with a backup [MP4 on the v0.1.0 release](https://github.com/parammadan/defx-bridge/releases/download/v0.1.0/DEFX_Bridge_Demo_voiced.mp4). Its build and provenance are described in [demo/video_manifest.md](../demo/video_manifest.md).
+**Recorded demo video:** [YouTube (unlisted, AI-narrated, V2.1)](https://youtu.be/7UOnir6PzXw), with a backup [MP4 on the v0.1.0 release](https://github.com/parammadan/defx-bridge/releases/download/v0.1.0/DEFX_Bridge_Demo_V2.1.mp4). Its build and provenance are described in [demo/video_manifest.md](../demo/video_manifest.md).
 
 Everything below was run on this machine (R 4.6.1, macOS 26.4, arm64). The quoted outputs are copied from those runs. Each command takes about 0.4–1 s.
 

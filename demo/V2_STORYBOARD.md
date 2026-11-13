@@ -24,7 +24,7 @@
 
 ## V2.1 (author intro + clearer credits): `demo/DEFX_Bridge_Demo_V2.1.mp4`
 
-120.39 s, 1920×1080, H.264 + AAC (−16.6 LUFS), 9,774,633 bytes, SHA-256 `93713a7b6a49cce7d76d8ef595c17775ed732eab88f5648aef0993dce73ebdf5`. Captions: `V2.1_CAPTIONS.srt` (25 cues). **Not published.**
+120.39 s, 1920×1080, H.264 + AAC (−16.6 LUFS), 9,774,633 bytes, SHA-256 `93713a7b6a49cce7d76d8ef595c17775ed732eab88f5648aef0993dce73ebdf5`. Captions: `V2.1_CAPTIONS.srt` (25 cues). **Published 2026-11-12 (Unlisted): https://youtu.be/7UOnir6PzXw**, also attached to the v0.1.0 release.
 
 Only two scenes changed, and V2 stays untouched:
 

@@ -436,7 +436,7 @@ scripts/show_sheet.R artifacts/define_like_filled.xlsx Methods --cols ID,Type,De
 
 **Links:**
 
-- YouTube (Unlisted, AI-narrated): <https://youtu.be/h273icslijc> (V1 picture with AI narration). Channel "Param Madan" (@parammadan3544). Uploaded 2026-11-12. Playback verified at 1080p, and the published English captions were checked on screen at 23.8 s, 103.9 s and 119.0 s.
+- YouTube (Unlisted, AI-narrated, demo V2.1): <https://youtu.be/7UOnir6PzXw>. Channel "Param Madan" (@parammadan3544). Uploaded 2026-11-12. Playback verified at 1080p, and the published English captions were checked on screen at 23.8 s, 103.9 s and 119.0 s.
 - MP4 backup: <https://github.com/parammadan/defx-bridge/releases/download/v0.1.0/DEFX_Bridge_Demo.mp4>
 - Project page: <https://parammadan.github.io/defx-bridge/>
 
@@ -702,7 +702,7 @@ In the interview: "I can explain every line and why it's there, and I can show y
 - **File:** `demo/DEFX_Bridge_Demo_V2.mp4`, 114.82 s, 1080p, AI narration, SHA-256 `e423c86f…`.
 - **Scenes:** the problem → two languages → real extraction → a real V002 failure → a one-line fix that passes → a spreadsheet preview of the real .xlsx → verification (18/18, 66 tests / 273 checks, CI screenshot) → closing.
 - **Build files:** `demo/V2_STORYBOARD.md`, `V2_NARRATION.md`, `V2_CAPTIONS.srt` and `V2_VIDEO_AUDIT.md`. The audit rates V1 at 4.5/10 and V2 at 7/10, with the reasons.
-- **Status:** awaiting review. The YouTube video (h273icslijc) is still the V1 picture with AI narration.
+- **Status:** V2.1 published (Unlisted) at https://youtu.be/7UOnir6PzXw. It adds an on-screen author intro and clearer credits: Megan Hinger is the DEFX SAS macro creator and paper coauthor, Brendan Bartley is the paper coauthor, and Scott Anderson is the defxit Linux command-line utility creator.
 
 ### Deeper questions experienced SAS/R programmers may ask
 
@@ -720,8 +720,8 @@ In the interview: "I can explain every line and why it's there, and I can show y
 | Project page | <https://parammadan.github.io/defx-bridge/> |
 | CI | <https://github.com/parammadan/defx-bridge/actions> |
 | Release v0.1.0 | <https://github.com/parammadan/defx-bridge/releases/tag/v0.1.0> |
-| YouTube (Unlisted, AI-narrated) | <https://youtu.be/h273icslijc> (V1 picture) |
-| Demo V2 (local, unpublished) | `~/defx-bridge/demo/DEFX_Bridge_Demo_V2.mp4` |
+| YouTube (Unlisted, demo V2.1) | <https://youtu.be/7UOnir6PzXw> |
+| Demo V2.1 file | `~/defx-bridge/demo/DEFX_Bridge_Demo_V2.1.mp4` (also a v0.1.0 release asset) |
 | Independent audit | `docs/DEFX_BRIDGE_INDEPENDENT_AUDIT.md` |
 | Video file | `~/defx-bridge/demo/DEFX_Bridge_Demo.mp4` (also hard-linked at `~/Desktop/videos/defx-bridge/`) and as a release asset |
 | Paper | <https://pharmasug.org/proceedings/2026/AP/PharmaSUG-2026-AP-220.pdf> |
