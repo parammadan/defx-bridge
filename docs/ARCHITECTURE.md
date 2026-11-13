@@ -40,7 +40,7 @@ Directories are listed recursively (`--no-recursive` for one level) and single f
 - `/* ... */` block comments (start/end line, column, exact raw text)
 - quoted strings `'...'` and `"..."` with doubled-quote escapes, which are skipped
 - statement comments `* ... ;` and `%* ... ;` when the `*` begins a statement (after `;`, start of file, whitespace or comments)
-- `DATALINES;` / `CARDS;` / `LINES;` / `PARMCARDS;` blocks (skipped to the next `;`), plus the `...4;` variants (skipped to `;;;;`)
+- `DATALINES;` / `CARDS;` / `LINES;` / `PARMCARDS;` blocks (skipped to the next `;`), plus the `...4;` variants (skipped to `;;;;`). The statement is recognised even when a comment precedes it, and a block that is never closed is a V008
 
 An unterminated comment, string or statement comment stops lexing for that file with a V008 error. Tags before that point are kept. The lexer does **not** interpret macro quoting functions, macro-generated code, or `%include`.
 
@@ -82,13 +82,14 @@ See [VALIDATION.md](VALIDATION.md). The ownership rule (V003) groups records by 
    - drops unmatched rows unless `--keep-unmatched`
    - sorts Methods and Comments by ID
    - flags V009 (target not in the template) and V013 (dangling references)
-3. Writing: openxlsx `loadWorkbook()` → `deleteData()` + `writeData()` on the four sheets only → `saveWorkbook()` to a temp file in the destination directory.
+3. Writing: openxlsx `loadWorkbook()`. In Datasets/Variables, **only the owned cells of targeted rows** are cleared and written, cell by cell, so formulas, numbers and dates elsewhere are never rewritten. Methods/Comments are rebuilt (`deleteData()` + `writeData()`), so formulas, types and styles in those sheets are not preserved. Then `saveWorkbook()` to a temp file in the destination directory. Refused up front: `--out` that is a directory, an export with zero records, and output paths equal to an input.
 4. `verify_export()` re-reads template and temp file with readxl, an independent reader (openxlsx is the fallback), as text. It checks:
    - sheet names and order
    - other sheets cell-for-cell
    - non-DEFX columns and untargeted rows of Datasets/Variables
    - headers of Methods/Comments, and matched rows' non-DEFX columns
-   - the sentinel count
+   - **that every targeted cell holds the value its tag dictates** (Datasets/Variables owned columns; Methods/Comments rows equal the tag-built sheet)
+   - the sentinel count, only where content must survive (rows legitimately dropped under KEEPTAGS=N don't count)
 5. Only if every check passes: `file.rename()` into place, then the `_meta.csv` and report.
 
 Errors at any stage leave no new workbook. A pre-existing file at `--out` is not deleted, and the CLI says it was not updated.

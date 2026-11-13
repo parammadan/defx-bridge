@@ -13,7 +13,7 @@ Every diagnostic is one row with `code, severity, source_file, source_line, name
 | V005 | error | Predecessor missing, not exactly one `DS.VAR`, refers to itself, or its dataset is in the spec but the variable is not | `\| Predecessor \| AE AETERM` |
 | V006 | error | One program gives one target more than one origin type (e.g. Computation + Assigned, or a continuation line that forgot `Imputation`); a variable-only tag and a dataset-specific tag both set the same Variables row | `ADAE.TRTEMFL` computed and Assigned in one file |
 | V007 | exit 1 | Spec missing, unreadable, without Dataset/Variable columns, with no rows, or with blank/invalid identifiers | `--spec missing.csv` |
-| V008 | error | File unreadable, R syntax error (no tags taken from that file), or unterminated SAS comment/string (tags before it are kept) | `x <- (` |
+| V008 | error | File unreadable or not valid UTF-8, R syntax error (no tags taken from that file), or unterminated SAS comment, string or DATALINES block (tags before it are kept) | `x <- (` |
 | V009 | error (export) | A tagged target has no Datasets/Variables row in the template | `DM.AGE` is in the spec but not in the define-like template |
 | V010 | warning | A comment starts with DEFX but has no `\|`. Ignored | `/* DEFX ADAE.ASTDT missing delimiters */` |
 | V011 | info | Predecessor dataset is outside the spec, so only its structure was checked | `\| Predecessor \| MEDDRA.SOC` |
@@ -36,7 +36,7 @@ Not errors by design:
 
 ## What the automated tests establish
 
-`tests/testthat` has 4 files covering the 25 required categories plus extras. Each test names the behaviour it checks. Last full run (R 4.6.1, macOS 26.4): **52 tests, 236 expectations, 0 failed, 0 skipped**; the same on CI (Ubuntu 24.04) (`Rscript -e 'testthat::test_local(".")'`). Under `R CMD check` the 15 tests that need `examples/` or `bin/` skip (they are excluded from the built package): Status OK, 123 passed. The CI full-suite job sets `DEFX_REQUIRE_FIXTURES=true` and fails on any skip, so those tests always run there.
+`tests/testthat` has 5 files covering the 25 required categories, plus regression tests for every defect found by the independent audit (`test-audit-regressions.R`). Each test names the behaviour it checks. Last full run (R 4.6.1, macOS 26.4): **66 tests, 273 expectations, 0 failed, 0 skipped**; the same on CI (Ubuntu 24.04) (`Rscript -e 'testthat::test_local(".")'`). Under `R CMD check` the 23 tests that need `examples/` or `bin/` skip because those are excluded from the built package The CI full-suite job sets `DEFX_REQUIRE_FIXTURES=true` and fails on any skip, so those tests always run there.
 
 | Area | File | Examples |
 |---|---|---|

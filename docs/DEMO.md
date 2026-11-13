@@ -77,7 +77,7 @@ This shows `[ERROR V003] first.sas:2 ... also at: second.R:2`, and the reverse.
   --template examples/define_like_template.xlsx --out artifacts/define_like_filled.xlsx
 open artifacts/define_like_filled.xlsx
 ```
-Expected: 14 preservation checks, all `PASS`, ending with `sentinel 'DO_NOT_CHANGE' count unchanged  PASS  template 5, output 5`. Then:
+Expected: 18 checks, all `PASS`, ending with `sentinel 'DO_NOT_CHANGE' count unchanged  PASS  template 5, output 5`. Then:
 ```
 Workbook         : artifacts/define_like_filled.xlsx
   Methods rows 18, Comments rows 5, Variables rows updated 34, Datasets rows updated 3
