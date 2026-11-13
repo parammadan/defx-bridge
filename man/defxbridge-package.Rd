@@ -28,7 +28,7 @@ load_spec(path)
 validate_defx_metadata(records, spec)
 run_pipeline(sources, spec_path = NULL, recursive = TRUE)
 export_defx_workbook(records, template_path, out_path, keep_unmatched = FALSE)
-verify_export(template_path, out_path, touched, sentinel = "DO_NOT_CHANGE")
+verify_export(template_path, out_path, touched, sentinel = "DO_NOT_CHANGE", expected = NULL)
 workbook_content(path)
 workbooks_equivalent(a, b)
 write_validation_report(path, result, command = "validate", extra = NULL)
@@ -49,6 +49,7 @@ write_validation_report(path, result, command = "validate", extra = NULL)
 \item{keep_unmatched}{Keep Methods/Comments rows that no tag matches.}
 \item{touched}{Row indices targeted by tags.}
 \item{sentinel}{Value whose count must not change.}
+\item{expected}{Sheet data the export intended to write; when given, targeted cells are checked against it.}
 \item{a}{Workbook path.}
 \item{b}{Workbook path.}
 \item{result}{run_pipeline() result.}

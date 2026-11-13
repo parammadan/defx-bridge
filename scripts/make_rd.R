@@ -21,7 +21,8 @@ argdoc <- c(
   touched = "Row indices targeted by tags.", sentinel = "Value whose count must not change.",
   a = "Workbook path.", b = "Workbook path.", result = "run_pipeline() result.",
   command = "Command line shown in the report.", extra = "Extra Markdown lines.",
-  args = "Command-line arguments.")
+  args = "Command-line arguments.",
+  expected = "Sheet data the export intended to write; when given, targeted cells are checked against it.")
 argdoc[["recursive"]] <- "Search sub-directories."  # not inside c(): c() has its own recursive argument
 used <- unique(unlist(lapply(ex, function(f) names(formals(env[[f]])))))
 missing <- setdiff(used, names(argdoc))
